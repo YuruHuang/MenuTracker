@@ -4,6 +4,7 @@ import os
 from bs4 import BeautifulSoup
 from datetime import date
 
+
 # Define user headers
 headers = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36',
@@ -74,13 +75,13 @@ def combo_PDFDownload(rest_name, url, keyword='pdf', prex=None, verify=True):
         PDFDownloader(url=url_link, filePath=filePath)
     print('finished downloading pdfs for ' + rest_name)
 
-def create_folder(rest_name):
+def create_folder(rest_name, folder):
     '''
     Creates a folder for each restaurant
     :param rest_name: the name of the restaurant folder
     :return: a new folder for the restaurant will be created
     '''
-    path_temp =  './'+ rest_name + '_' + date.today().strftime("%b-%d-%Y")
+    path_temp =  './'+ folder +'/'+ rest_name + '_' + date.today().strftime("%b-%d-%Y")
     os.mkdir(path_temp)
     return path_temp
 
@@ -93,14 +94,23 @@ def RunSpider(spidername, folder, json=False):
     :param json: Default is False (file saving as csv).
     :return: spider output saved in csv or json
     '''
-    path = './' + spidername + '_' + date.today().strftime("%b-%d-%Y")
-    os.mkdir(path)
-    path_absolute = '/Users/huangyuru/PycharmProjects/MenuStatUK/' + folder+'/'+ spidername + '_' + date.today().strftime(
-        "%b-%d-%Y")
-    os.chdir('/Users/huangyuru/PycharmProjects/MenuStatUK/scrapy_menustat')
+    absolute_path = '/Users/huangyuru/PycharmProjects/MenuTracker'
+    path = create_folder(spidername, folder)
+    os.chdir(absolute_path+'/Scrapy_spiders')
     if json is True:
-        os.system("scrapy crawl " + spidername + " -o " + path_absolute + '/' + spidername + '_items.json')
+        os.system("scrapy crawl " + spidername + " -o " + absolute_path + path[1:]+ '/' + spidername + '_items.json')
     else:
-        os.system("scrapy crawl " + spidername + " -o " + path_absolute + '/' + spidername + '_items.csv')
-    os.chdir('/Users/huangyuru/PycharmProjects/MenuStatUK/'+ folder)
+        os.system("scrapy crawl " + spidername + " -o " + absolute_path + path[1:] + '/' + spidername + '_items.csv')
+    os.chdir(absolute_path)
     print('finished scraping ' + spidername)
+
+# function: run the script for a restaurant (requests)
+def RunScript(rest_name):
+    try:
+        os.system('python '+ rest_name+'.py')
+        print('Successfully scraped '+ rest_name)
+    except:
+        print('Issues with' + rest_name + '. Please Review')
+
+# Selenium Path
+web_browser_path = '/Users/huangyuru/PycharmProjects/MenuStatUK/chromedriver'
