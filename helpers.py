@@ -1,15 +1,22 @@
-import re
-import requests
 import os
-from bs4 import BeautifulSoup
+import re
 from datetime import date
+from time import sleep
 
+import requests
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+
+from define_collection_wave import folder
 
 # Define user headers
 headers = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36',
     'Accept': 'application/json'
 }
+
 
 # function to remove html tags
 def cleanhtml(raw_html):
@@ -42,8 +49,6 @@ def PDFDownloader(url, filePath, verif=True):
             if chunk:
                 pdf.write(chunk)
 
-
-
 # Downloading multiple PDFs
 def combo_PDFDownload(rest_name, url, keyword='pdf', prex=None, verify=True):
     '''
@@ -55,7 +60,7 @@ def combo_PDFDownload(rest_name, url, keyword='pdf', prex=None, verify=True):
     :param verify: True or False. whether to allow authentication
     :return: multiple downloaded PDFs
     '''
-    path = './'+ rest_name + '_' + date.today().strftime("%b-%d-%Y")
+    path = folder + '/' + rest_name + '_' + date.today().strftime("%b-%d-%Y")
     os.mkdir(path)
     html = requests.get(url, headers=headers, verify=verify)
     soup = BeautifulSoup(html.text, 'html.parser')
@@ -67,13 +72,39 @@ def combo_PDFDownload(rest_name, url, keyword='pdf', prex=None, verify=True):
                 url_link = '/' + url_link
             url_link = prex + url_link
         filename = url_link.split('/')[-1]
-        if filename[-3:]!='pdf':
-            filename = filename +'.pdf'
-        filePath = path + '/' +filename
+        if filename[-3:] != 'pdf':
+            filename = filename + '.pdf'
+        filePath = path + '/' + filename
         print(url_link)
         print(filePath)
         PDFDownloader(url=url_link, filePath=filePath)
     print('finished downloading pdfs for ' + rest_name)
+
+
+# Download PDFs with Selenium
+def java_PDF(rest_name, url, prex=None):
+    path = create_folder(rest_name, folder)
+    s = Service(web_browser_path)
+    browser = webdriver.Chrome(service=s)
+    browser.get(url)
+    # links that contain PDF
+    links = [link.get_attribute('href') for link in browser.find_elements(by=By.PARTIAL_LINK_TEXT, value='Download')]
+    for url_link in links:
+        browser.get(url_link)
+        sleep(5)
+        if 'https://' not in url_link and 'http://' not in url_link:
+            if url_link[0] != '/':
+                url_link = '/' + url_link
+            url_link = prex + url_link
+        filename = url_link.split('/')[-1]
+        if filename[-3:] != 'pdf':
+            filename = filename + '.pdf'
+        filePath = path + '/' + filename
+        print(url_link)
+        print(filePath)
+        PDFDownloader(url=url_link, filePath=filePath)
+    browser.quit()
+
 
 def create_folder(rest_name, folder):
     '''
@@ -81,7 +112,7 @@ def create_folder(rest_name, folder):
     :param rest_name: the name of the restaurant folder
     :return: a new folder for the restaurant will be created
     '''
-    path_temp =  './'+ folder +'/'+ rest_name + '_' + date.today().strftime("%b-%d-%Y")
+    path_temp = './' + folder + '/' + rest_name + '_' + date.today().strftime("%b-%d-%Y")
     os.mkdir(path_temp)
     return path_temp
 
@@ -96,7 +127,7 @@ def RunSpider(spidername, folder, json=False):
     '''
     absolute_path = '/Users/huangyuru/PycharmProjects/MenuTracker'
     path = create_folder(spidername, folder)
-    os.chdir(absolute_path+'/Scrapy_spiders')
+    os.chdir(absolute_path + '/Scrapy_spiders')
     if json is True:
         os.system("scrapy crawl " + spidername + " -o " + absolute_path + path[1:]+ '/' + spidername + '_items.json')
     else:

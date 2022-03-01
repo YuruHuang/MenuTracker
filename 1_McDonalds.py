@@ -1,13 +1,16 @@
-from helpers import create_folder,cleanhtml
 import json
+
+import numpy as np
+import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-import pandas as pd
-from define_collection_wave import folder
 from iteration_utilities import flatten
-import numpy as np
 
-path_mcdonalds = create_folder('1_McDonalds',folder)
+from define_collection_wave import folder
+from helpers import create_folder, cleanhtml
+
+path_mcdonalds = create_folder('1_McDonalds', folder)
+
 
 def parse_json(dat):
     fileName = path_mcdonalds + '/item_' + str(item_id) + '.json'
@@ -57,14 +60,14 @@ def parse_combo(dat):
         else:
             parse_component.update({'servingweight': None})
         components_list.append(parse_component)
-    # add the quantities (absolute energy)
+    # add the quantities (absolute energy) and % DV
     nutrients = {}
     for var in [key for key in components_list[0].keys() if 'Quantity' in key or 'DV' in key]:
         try:
             nutrients[var] = sum([float(component.get(var)) for component in components_list])
         except:
             nutrients[var] = None
-    # weighted density and % RI
+    # weighted density
     for var in [key for key in components_list[0].keys() if '100_g_per_product'in key]:
         try:
             nutrients[var] = np.average([float(component.get(var)) for component in components_list], weights=[float(component.get('servingweight')) for component in components_list])
