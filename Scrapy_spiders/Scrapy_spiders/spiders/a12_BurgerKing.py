@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import re
 from datetime import date
 from time import sleep
 
@@ -70,7 +71,7 @@ class A12BurgerkingSpider(scrapy.Spider):
                 item.click()
                 sleep(2)
                 resp = Selector(text=self.driver.page_source)
-                item_element = resp.xpath('//div[@class="content-wrapper__ContentWrapper-fh0wv8-0 hlGrxd"]')
+                item_element = resp.xpath('//div[contains(@class,"content-wrapper__ContentWrapper-fh0wv8-0")]')
                 if len(item_element) == 1:
                     if len(item_element.xpath('./h5[@data-testid="per-mass-header"]')) == 1:
                         rows_serving = item_element.xpath(
@@ -89,12 +90,12 @@ class A12BurgerkingSpider(scrapy.Spider):
                         perserving = update_nutrients(perserving)
                     perserving.update({
                         'item_name': item_element.xpath(
-                            './h3[@class="item-name__ItemName-sc-9r2cgr-0 jSpDpo"]/text()').get(),
+                            './h3[contains(@class, "item-name__ItemName")]/text()').get(),
                         'collection_date': date.today().strftime("%b-%d-%Y"),
                         'rest_name': 'Burger King',
                         'menu_section': cat_name
                     })
-                yield perserving
+                    yield perserving
                 self.driver.find_element(by=By.XPATH,
                                          value='//button[@class="close-button__StyledButton-isthh2-0 eAURpv modal__StyledCloseButtonDefault-ihds1d-2 eGeNgW"]').click()
         self.driver.quit()
