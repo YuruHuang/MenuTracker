@@ -5,7 +5,7 @@
 import os
 
 from define_collection_wave import folder
-from helpers import combo_PDFDownload, RunSpider, RunScript, java_PDF
+from helpers import combo_PDFDownload, RunSpider, RunScript, java_PDF, greene_king_download
 
 os.system('python define_collection_wave.py')
 
@@ -27,20 +27,7 @@ RunSpider('5_KFC', folder)
 # 6. Domino - PDF download
 java_PDF('6_Dominos', url='https://corporate.dominos.co.uk/allergens-nutritional')
 
-7.
-Starbucks - previously
-only
-presented
-their
-nutritional
-info in PDF
-format - reuse
-the
-web
-scraping
-script
-from before
-
+# 7. Starbucks - previously in PDF format
 combo_PDFDownload('7_Starbucks', url='https://www.starbucks.co.uk/nutrition')
 RunSpider('7_Starbucks', folder)
 
@@ -86,3 +73,36 @@ RunSpider('18_Sizzling', folder)
 RunSpider('19_EmberInns', folder)
 
 # 20. Chef & Brewer Pub Co.
+greene_king_download(rest_name='20_Chef', id=6145, url='https://www.chefandbrewer.com/', folder=folder)
+
+# 21. Table Table
+combo_PDFDownload(url='https://www.tabletable.co.uk/en-gb/allergy-nutrition', rest_name='21_TableTable',
+                  prex='https://www.tabletable.co.uk')
+
+# 22. Toby Cavery
+RunSpider('22_Toby', folder)
+
+# 23. Revolution
+RunSpider('23_Revolution', folder)
+
+# 24. Zizzi
+combo_PDFDownload('24_Zizzi', url='https://www.zizzi.co.uk/menus')
+
+# 25. Ask Italian
+combo_PDFDownload(rest_name='25_Ask', url='https://www.askitalian.co.uk/allergens/')
+
+# 26. Papa Johns - Nutrition calculators available only for US and Canada locations
+combo_PDFDownload('26_PapaJohns', url='https://www.papajohns.co.uk/', prex='https://www.papajohns.co.uk')
+
+# 27. Yates
+RunSpider('27_Yates', folder)
+
+# 28. Yo!Sushi -> lack carb and fibre information on websites -> PDF
+combo_PDFDownload('28_Yosushi', url='https://yosushi.com/content/Allergen-and-Nutrition',
+                  prex='https://yosushi.com')
+
+# 29. All Bar One
+RunSpider('29_AllBarOne', folder)
+
+# 30. GBK
+RunSpider('30_GBK', folder)

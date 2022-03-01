@@ -1,5 +1,6 @@
 import os
 import re
+import urllib
 from datetime import date
 from time import sleep
 
@@ -138,10 +139,26 @@ def RunSpider(spidername, folder, json=False):
 # function: run the script for a restaurant (requests)
 def RunScript(rest_name):
     try:
-        os.system('python '+ rest_name+'.py')
-        print('Successfully scraped '+ rest_name)
+        os.system('python ' + rest_name + '.py')
+        print('Successfully scraped ' + rest_name)
     except:
         print('Issues with' + rest_name + '. Please Review')
 
+
 # Selenium Path
 web_browser_path = '/Users/huangyuru/PycharmProjects/MenuStatUK/chromedriver'
+
+
+# Downloading PDF for Greene King companies
+def greene_king_download(rest_name, id, url, folder):
+    path = create_folder(rest_name, folder)
+    menus = requests.get(f'https://menu.greeneking-pubs.co.uk/{id}').json().get('data').get('menus')
+    for menu in menus:
+        menu_name = urllib.parse.quote(menu.get('name'))
+        get_menu_url = f'{url}/umbraco/api/menu/getmenus?id={id}&name={menu_name}'
+        url_pdfs = requests.get(get_menu_url).json().get('data').values()
+        for url_pdf in url_pdfs:
+            if url_pdf is not None:
+                url_pdf = url + url_pdf
+                path_temp = path + '/' + url_pdf.split('/')[-1]
+                PDFDownloader(url_pdf, path_temp)
