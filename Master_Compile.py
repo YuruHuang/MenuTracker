@@ -106,3 +106,54 @@ RunSpider('29_AllBarOne', folder)
 
 # 30. GBK
 RunSpider('30_GBK', folder)
+
+# 31. Flaming Grill
+RunScript('31_FlamingGrill')
+
+# 32. Loch Fyne seafood grill -> No nutrition available
+# combo_PDFDownload('32_LochFyne', prex='https://www.lochfyneseafoodandgrill.co.uk',
+#                   url='https://www.lochfyneseafoodandgrill.co.uk/allergens')
+
+# 33. PAUL
+RunSpider('33_Paul', folder)
+
+# 34. Wimpy
+RunSpider('34_Wimpy', folder)
+
+# 35. Krispy Creme
+RunSpider('35_KrispyKreme', folder)
+
+# 36. Bills
+RunSpider('36_Bills', folder=folder)
+
+# 37. Walkabout
+RunSpider('37_Walkabout', folder)
+
+# 38. Itsu
+RunSpider('38_Itsu', folder)
+
+# 39. Ben & Jerry
+RunSpider('39_BenJerry', folder)
+
+# 40. Asda -> PDF format, randomly selected Asda
+combo_PDFDownload('40_Asda', url='https://storelocator.asda.com/east-of-england/stevenage/monkswood-way/cafe')
+
+# 41. Barburrito -> PDF
+combo_PDFDownload(rest_name='41_Barburrito', url='https://www.barburrito.co.uk/menu')
+
+# 42. Benugo
+RunSpider('42_Benugo', folder)
+
+# 43. Boost Juice
+RunSpider('43_Boostjuice', folder)
+
+# 44. Boswells
+combo_PDFDownload('44_Boswell', 'https://boswellsgroup.com/menu/')
+
+# 45. Brewhouse
+combo_PDFDownload('45_Brewhouse', 'https://www.brewhouseandkitchen.com/venue/hoxton/')
+
+# 46. Cineworld
+
+
+# 47. Coffee #1
