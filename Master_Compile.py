@@ -208,3 +208,14 @@ RunScript('61_MorrisonsCafe')
 
 # 62. Pho Cafe
 combo_PDFDownload('62_Pho', url='https://www.phocafe.co.uk/menus/', prex='https://www.phocafe.co.uk')
+
+# 63. Pieminister
+RunSpider('63_Pieminister', folder)
+
+# 64. Pure
+RunSpider('64_Pure', folder)
+
+# 65. Sainsbury Cafe
+combo_PDFDownload('65_SainsburysCafe',
+                  'https://www.sainsburys.co.uk/shop/gb/groceries/get-ideas/our-instore-services/--sainsburys-cafe',
+                  prex='https://www.sainsburys.co.uk')

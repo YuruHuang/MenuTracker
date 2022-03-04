@@ -1,8 +1,9 @@
-import scrapy
-from time import sleep
-from scrapy import Selector
 import json
 from datetime import date
+from time import sleep
+
+import scrapy
+from scrapy import Selector
 from selenium import webdriver
 
 
