@@ -4,6 +4,7 @@ import urllib
 from datetime import date
 from time import sleep
 
+import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -83,13 +84,18 @@ def combo_PDFDownload(rest_name, url, keyword='pdf', prex=None, verify=True):
 
 
 # Download PDFs with Selenium
-def java_PDF(rest_name, url, prex=None):
+def java_PDF(rest_name, url, prex=None, link_=True, xpath_=None):
     path = create_folder(rest_name, folder)
     s = Service(web_browser_path)
     browser = webdriver.Chrome(service=s)
     browser.get(url)
     # links that contain PDF
-    links = [link.get_attribute('href') for link in browser.find_elements(by=By.PARTIAL_LINK_TEXT, value='Download')]
+    if link_:
+        links = [link.get_attribute('href') for link in
+                 browser.find_elements(by=By.PARTIAL_LINK_TEXT, value='Download')]
+    else:
+        links = [link.get_attribute('href') for link in
+                 browser.find_elements(by=By.XPATH, value=xpath_)]
     for url_link in links:
         browser.get(url_link)
         sleep(5)
@@ -130,7 +136,12 @@ def RunSpider(spidername, folder, json=False):
     path = create_folder(spidername, folder)
     os.chdir(absolute_path + '/Scrapy_spiders')
     if json is True:
-        os.system("scrapy crawl " + spidername + " -o " + absolute_path + path[1:]+ '/' + spidername + '_items.json')
+        os.system("scrapy crawl " + spidername + " -o " + absolute_path + path[1:] + '/' + spidername + '_items.json')
+        sleep(5)
+        with open(absolute_path + path[1:] + '/' + spidername + '_items.json') as jsonfile:
+            json_data = json.load(jsonfile)
+        json_df = pd.DataFrame(json_data)
+        json_df.to_csv(absolute_path + path[1:] + '/' + spidername + '_items.csv')
     else:
         os.system("scrapy crawl " + spidername + " -o " + absolute_path + path[1:] + '/' + spidername + '_items.csv')
     os.chdir(absolute_path)

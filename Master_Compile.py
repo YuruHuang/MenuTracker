@@ -154,6 +154,57 @@ combo_PDFDownload('44_Boswell', 'https://boswellsgroup.com/menu/')
 combo_PDFDownload('45_Brewhouse', 'https://www.brewhouseandkitchen.com/venue/hoxton/')
 
 # 46. Cineworld
-
+combo_PDFDownload('46_Cineworld', url='https://www.cineworld.co.uk/#/', prex='https://www.cineworld.co.uk',
+                  keyword='jcr')
 
 # 47. Coffee #1
+combo_PDFDownload('47_Coffee1', 'https://www.coffee1.co.uk/food-nutritional-information/')
+
+# 48. Common Rooms
+RunSpider('48_CommonRooms', folder)
+
+# 49. Cookhouse & Pub
+combo_PDFDownload('49_CookhousePub', url='https://www.cookhouseandpub.co.uk/en-gb/allergy-nutrition?intcmp=footer',
+                  prex='https://www.cookhouseandpub.co.uk', verify=False)
+
+# 50. Crussh -> terrible website!
+RunSpider('50_Crussh', json=True, folder=folder)
+
+# 51. Farmhouse Inns -> PDF
+greene_king_download(rest_name='51_FarmhouseInns', id='5690', url='https://www.farmhouseinns.co.uk', folder=folder)
+
+# 52. Five guys -> PDF
+combo_PDFDownload(rest_name='52_FiveGuys', url='https://www.fiveguys.co.uk/nutrition')
+
+# 53. Harvester
+RunSpider('53_Harvester', folder)
+
+# 54. Hungry Horse -> a greene king company
+greene_king_download('54_HungryHorse', id='6347', url='https://www.hungryhorse.co.uk', folder=folder)
+
+# 55. Joe & the Juice
+RunSpider('55_JoeJuice', folder, json=True)
+
+# 56. Leon
+RunSpider('56_Leon', folder)
+
+# 57. greene king
+greene_king_download('57_GreeneKing', id='8183', url='https://www.greeneking-pubs.co.uk', folder=folder)
+
+# 58. Vue -> PDF
+java_PDF('58_Vue', url='https://www.myvue.com/legal/nutritional-information',
+         prex='https://www.myvue.com/legal/')
+
+# 59. Ocean Cinema
+java_PDF('59_Odeon', url='https://www.odeon.co.uk/experiences/food-drinks/food-and-drinks-facts-and-figures/',
+         prex='https://www.odeon.co.uk',
+         link_=False, xpath_="//p/a[contains(@title, 'Nutritional')]")
+
+# 60. Marston's Pubs
+combo_PDFDownload('60_Marstons', url='https://www.dragonflypubbasingstoke.co.uk/menus/')
+
+# 61. Morrisons Cafe
+RunScript('61_MorrisonsCafe')
+
+# 62. Pho Cafe
+combo_PDFDownload('62_Pho', url='https://www.phocafe.co.uk/menus/', prex='https://www.phocafe.co.uk')
