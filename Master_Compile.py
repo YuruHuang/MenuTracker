@@ -5,7 +5,8 @@
 import os
 
 from define_collection_wave import folder
-from helpers import combo_PDFDownload, RunSpider, RunScript, java_PDF, greene_king_download
+from helpers import combo_PDFDownload, RunSpider, RunScript, java_PDF, greene_king_download, PDFDownloader, \
+    create_folder
 
 os.system('python define_collection_wave.py')
 
@@ -213,9 +214,49 @@ combo_PDFDownload('62_Pho', url='https://www.phocafe.co.uk/menus/', prex='https:
 RunSpider('63_Pieminister', folder)
 
 # 64. Pure
-RunSpider('64_Pure', folder)
+RunScript('64_Pure')
 
 # 65. Sainsbury Cafe
 combo_PDFDownload('65_SainsburysCafe',
                   'https://www.sainsburys.co.uk/shop/gb/groceries/get-ideas/our-instore-services/--sainsburys-cafe',
                   prex='https://www.sainsburys.co.uk')
+
+# 66. Soho Cafe
+RunSpider('66_SohoCafe', folder)
+
+# 67. Stonehouse Pizza
+RunSpider('67_StonehousePizza', folder)
+
+# 68. Tank and Paddle
+RunSpider('68_TankPaddle', folder)
+
+# 69. Tesco Cafe
+RunSpider('69_TescoCafe', folder)
+
+# 70. The Cornish Bakery
+RunSpider('70_Cornish', folder)
+
+# 71. Thomas the Baker
+RunSpider('71_ThomasBaker', folder)
+
+# 72. Tim Hortons
+RunSpider('72_TimHortons', folder)
+
+# 73. Top Golf -> PDF only
+tg_path = create_folder('73_TopGolf', folder)
+PDFDownloader(url='https://s3.topgolf.com/uploads/pdf/menus/topgolf-nutritional-information.pdf?v=20200131',
+              filePath=tg_path + '/top-golf-nutritional-information.pdf')
+
+# 74. Town, Kitchen, and Pubs
+RunSpider('74_TownKitchenPubs', folder)
+
+# 75. Vintage Inns
+RunSpider('75_VintageInns', folder)
+
+# 76. Wasabi
+RunScript('76_Wasabi')
+
+# 77. Waterfields
+RunSpider('77_Waterfields', folder)
+
+# 78. Birds Bakery

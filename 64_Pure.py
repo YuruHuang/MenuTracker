@@ -1,11 +1,12 @@
 import json
+import urllib
 from datetime import date
 
 import pandas as pd
 import requests
 
-from define_collection_wave import headers, folder
-from helpers import create_folder
+from define_collection_wave import folder
+from helpers import create_folder, headers
 
 path_pure = create_folder('64_Pure', folder)
 
@@ -15,7 +16,23 @@ pure_nutrition = requests.get(pure_requesturl, headers=headers).json()
 path_nutrition = path_pure + '/pure_nutrition.json'
 with open(path_nutrition, 'w') as f:
     json.dump(pure_nutrition, f)
-pure_menuurl = 'https://pure-uk.5loyalty.com/get_default_menu/5L%20Main%20Menu%20-%20JUNE'  # default menu
+
+# get menu id
+pure_menu_id = requests.get(' https://pure-uk.5loyalty.com/get_default_menu_id', headers=headers).json()
+pure_menu_id_default = pure_menu_id.get('data').get('default_menu_id')
+# encode the default menu strings
+
+# months:
+# months = ['SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER']
+# for month in months:
+#     print(month)
+#     test_menu_url =f'https://pure-uk.5loyalty.com/get_default_menu/5L%20Main%20Menu%20-%20{month}'
+#     print(requests.get(test_menu_url,headers=headers).json())
+#     sleep(3)
+
+
+default_menu = urllib.parse.quote(pure_menu_id_default)
+pure_menuurl = f'https://pure-uk.5loyalty.com/get_default_menu/{default_menu}'  # default menu
 pure_menu = requests.get(pure_menuurl, headers=headers).json()
 path_menu = path_pure + '/pure_menu.json'
 with open(path_menu, 'w') as f:
