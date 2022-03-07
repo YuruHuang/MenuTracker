@@ -184,7 +184,7 @@ RunSpider('53_Harvester', folder)
 greene_king_download('54_HungryHorse', id='6347', url='https://www.hungryhorse.co.uk', folder=folder)
 
 # 55. Joe & the Juice
-RunSpider('55_JoeJuice', folder, json=True)
+RunSpider('55_JoeJuice', folder, json_=True)
 
 # 56. Leon
 RunSpider('56_Leon', folder)
@@ -257,6 +257,33 @@ RunSpider('75_VintageInns', folder)
 RunScript('76_Wasabi')
 
 # 77. Waterfields
-RunSpider('77_Waterfields', folder)
+RunSpider('77_Waterfields', folder, json_=True)
 
 # 78. Birds Bakery
+RunSpider('78_BirdsBakery', folder, json_=True)
+
+# 79. Tortilla
+RunScript('79_Tortilla')
+
+# 80. Tossed
+RunSpider('80_Tossed', folder)
+
+# 81. Bella Italian
+RunScript('81_BellaItalian')
+
+# 82. Cafe Rouge -> no NI
+
+# 83. Taco Bell
+RunSpider('83_TacoBell', folder)
+
+# 84. Coco di mama -> no NI anymore
+
+# 85. The real greek
+RunSpider('85_RealGreek', folder)
+
+# 86. Honest Burger
+combo_PDFDownload('86_HonestBurger', url='https://www.honestburgers.co.uk/allergy-information/', keyword='nutritional',
+                  prex='https://www.honestburgers.co.uk/')
+
+# 87. AMT
+combo_PDFDownload('87_AMT', url='http://amtcoffee.co.uk/types/drinks/')

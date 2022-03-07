@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import urllib
@@ -124,7 +125,7 @@ def create_folder(rest_name, folder):
     return path_temp
 
 # function: create a folder and run the spider
-def RunSpider(spidername, folder, json=False):
+def RunSpider(spidername, folder, json_=False):
     '''
     This function allows the spiders to run and saves the spider outputs
     :param spidername: the name of the spider you want to run
@@ -133,11 +134,11 @@ def RunSpider(spidername, folder, json=False):
     :return: spider output saved in csv or json
     '''
     absolute_path = '/Users/huangyuru/PycharmProjects/MenuTracker'
+    os.chdir(absolute_path)
     path = create_folder(spidername, folder)
     os.chdir(absolute_path + '/Scrapy_spiders')
-    if json is True:
+    if json_ is True:
         os.system("scrapy crawl " + spidername + " -o " + absolute_path + path[1:] + '/' + spidername + '_items.json')
-        sleep(5)
         with open(absolute_path + path[1:] + '/' + spidername + '_items.json') as jsonfile:
             json_data = json.load(jsonfile)
         json_df = pd.DataFrame(json_data)
