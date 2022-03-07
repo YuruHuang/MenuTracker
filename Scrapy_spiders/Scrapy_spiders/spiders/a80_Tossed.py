@@ -44,11 +44,11 @@ class A80TossedSpider(scrapy.Spider):
                     nutrition = soup.xpath('//div[@data-test="tab-panel-nutrition"]//li')
                     nutrition_dict = {nutrient.xpath('./span[1]/text()').get():
                                           nutrient.xpath('./span[2]/text()').get() for nutrient in nutrition}
-                    item_name = soup.xpath('//div[@class="css-13t6odn e1f6os763"]/h1/text()').get()
-                    item_description = soup.xpath('//div[@class="css-1d2gjik e1f6os764"]/p/text()').get()
-                    if item_name is None:
-                        item_name = soup.xpath('//div[@class="css-1b960qj eii5z642"]//h1/text()').get()
-                        item_description = soup.xpath('//div[@class="css-1e832z0 eii5z645"]/p/text()').get()
+                    item_name = soup.xpath('//h1[@class="css-1qumsvy erfj5ip0"]/text()').get()
+                    item_description = soup.xpath('//div[@class="css-1d2gjik e1f6os760"]/p/text()').get()
+                    # if item_name is None:
+                    #     item_name = soup.xpath('//div[@class="css-1b960qj eii5z642"]//h1/text()').get()
+                    #     item_description = soup.xpath('//div[@class="css-1e832z0 eii5z645"]/p/text()').get()
                     item_dict = {
                         'rest_name': 'Tossed',
                         'collection_date': date.today().strftime("%b-%d-%Y"),
