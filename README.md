@@ -4,7 +4,7 @@
 
 
 ## 1. What is MenuTracker and the codebase? 
-MenuTracker is a database that contains nutritional information served by large out-of-home chains in the UK. Large chain restaurants are defined as those with over 250 employees that provide nutritional information on their websites. The codebase of MenuTracker is written in Python, predominantly using <a href='https://scrapy.org/'> Scrapy framework</a>. We have developed scripts that allow **automatic download of nutritional PDFs** and **automated web scraping of nutritional information presented online**. For more information about the development of MenuTracker, please refer to our paper <a href='/'>here</a>. 
+MenuTracker is a database that contains nutritional information of menu items served by large out-of-home chains in the UK. Large chain restaurants are defined as those with over 250 employees that provide nutritional information on their websites. The codebase of MenuTracker is written in Python, predominantly using <a href='https://scrapy.org/'> Scrapy framework</a>. We have developed scripts that allow **automatic download of nutritional PDFs** and **automated web scraping of nutritional information presented online**. For more information about the development of MenuTracker, please refer to our paper <a href='/'>here</a>. 
 
 ## 2. What data are collected by the scripts?
 
