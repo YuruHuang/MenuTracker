@@ -9,7 +9,7 @@ class A39BenjerrySpider(scrapy.Spider):
     start_urls = ['https://www.benjerry.co.uk']
 
     def parse(self, response):
-        cat_links = response.xpath('//ul/li/a[contains(@href,"/flavours")]/@href').getall()
+        cat_links = response.xpath('//div[@class="w_bg"]/a/@href').getall()
         for cat_link in cat_links:
             yield scrapy.Request(url='https://www.benjerry.co.uk' + cat_link,
                                  callback=self.parse_page)

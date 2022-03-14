@@ -8,6 +8,7 @@ from selenium import webdriver
 from helpers import web_browser_path
 from time import sleep
 from scrapy import Selector
+from selenium.webdriver.common.by import By
 
 
 class A80TossedSpider(scrapy.Spider):
@@ -32,13 +33,13 @@ class A80TossedSpider(scrapy.Spider):
             self.driver.get(category_urls[i])
             cat_name = category_names[i]
             sleep(3)
-            items = self.driver.find_elements_by_xpath('//div[@class="css-1fo9epc epmm7pg14"]')
+            items = self.driver.find_elements(by=By.XPATH, value='//div[@class="css-1fo9epc epmm7pg14"]')
             for i in range(len(items)):
                 sleep(2)
-                self.driver.find_elements_by_xpath('//div[@class="css-1fo9epc epmm7pg14"]')[i].click()
+                self.driver.find_elements(by=By.XPATH, value='//div[@class="css-1fo9epc epmm7pg14"]')[i].click()
                 sleep(3)
                 try:
-                    self.driver.find_element_by_xpath('//li[@data-test="tab-Nutrition"]').click()
+                    self.driver.find_elements(by=By.XPATH, value='//li[@data-test="tab-Nutrition"]').click()
                     sleep(2)
                     soup = Selector(text=self.driver.page_source)
                     nutrition = soup.xpath('//div[@data-test="tab-panel-nutrition"]//li')
@@ -57,7 +58,8 @@ class A80TossedSpider(scrapy.Spider):
                         'menu_section': cat_name
                     }
                     item_dict.update(nutrition_dict)
-                    self.driver.find_element_by_xpath("//button[@data-test='customization-page-back-button']").click()
+                    self.driver.find_element(by=By.XPATH,
+                                             value="//button[@data-test='customization-page-back-button']").click()
                     sleep(3)
                     yield item_dict
                 except:
