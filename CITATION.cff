@@ -1,0 +1,15 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  MenuTracker: nutritional database of food prepared
+  out-of-home in the UK
+message: Please cite this dataset using these metadata.
+type: dataset
+authors:
+  - given-names: Yuru
+    family-names: Huang
+    email: Yuru.Huang@mrc-epid.cam.ac.uk
+    affiliation: 'University of Cambridge '
+    orcid: 'https://orcid.org/0000-0002-6800-0272'
