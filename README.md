@@ -44,10 +44,16 @@ For each large out-of-home food chain, we collect `chain name`, `menu section`, 
 ```
 
 ## 3. What is in this repo? 
+There are two steps for obtaining MenuTracker data. First, we use the Python scripts to collect restaurant nutritional information. Next, we standarise and compile all the data. 
+**Data Collection**:
 -  `Master_Compile.py` is the master Python file you will need to run. Running the script initiates automatic download of nutritional PDFs and web scraping of nutritional information presented on the websites. 
 -  `helpers.py` contains helpful Python functions and variables for MenuTracker data cllection. For example, `combo_PDFDownload` enables automatic download of nutritional PDF for the restaurant and creates a folder to save the PDF. 
 -  `/Scrapy_spiders/Scrapy_spiders/spiders/~` contains individual web crawlers for chains, e.g., Nandos, Burger King, etc. Running individual spiders will initiate the web scraping of nutritional information for specific chains. *You may have to download the <a href='https://selenium-python.readthedocs.io/installation.html#drivers'>selenium webdriver </a> and change the path in order to download data for some chains. 
 -  Other scripts, such as `4_Greggs.py`, also scrapes information for a specific chain, although not written in Python Scrapy framework. 
+**Data Cleaning**: 
+- `DataMerge_MenuTracker.R' is the master R script that pulls and standarises all the restaurant nutritional information we collect from the previous step. 
+- `Helpers.R' contains helpful customised R functions for cleaning, merging, and validation. 
+For restaurant nutritional information in PDF format, we use [Tabula]https://tabula.technology or [Camelot]https://camelot-py.readthedocs.io/en/master/ to get the csv file directly. 
 
 ## 4. How do I use this codebase? 
 ### Step 1: Clone this repo 
