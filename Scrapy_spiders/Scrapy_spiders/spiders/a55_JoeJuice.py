@@ -1,13 +1,10 @@
-import sys
 from datetime import date
 from time import sleep
 
 import scrapy
+from browserPath import web_browser_path
 from scrapy import Selector
 from selenium import webdriver
-
-sys.path.append('/Users/huangyuru/PycharmProjects/MenuTracker')
-from helpers import web_browser_path
 
 
 class A55JoejuiceSpider(scrapy.Spider):
@@ -25,7 +22,7 @@ class A55JoejuiceSpider(scrapy.Spider):
 
     def parse(self, response):
         self.driver.get(response.url)
-        sleep(3)
+        sleep(10)
         self.driver.find_element_by_id('declineButton').click()
         sleep(1)
         categories = self.driver.find_elements_by_xpath('//div[@data-cy="product-subheader"]')
@@ -36,7 +33,7 @@ class A55JoejuiceSpider(scrapy.Spider):
                 item = self.driver.find_element_by_xpath(
                     f'((//div[@data-cy="product-subheader"])[{i + 1}]/following-sibling::div/div[contains(@class,"item")])[{j + 1}]')
                 item_description = item.find_element_by_xpath(
-                    './/p[@class="MuiTypography-root jss96 MuiTypography-caption MuiTypography-colorTextPrimary"]').text
+                    './/p[@class="MuiTypography-root jss99 MuiTypography-caption MuiTypography-colorTextPrimary"]').text
                 item_price = item.find_element_by_xpath(
                     './/p[@class="MuiTypography-root MuiTypography-caption MuiTypography-colorTextPrimary MuiTypography-alignLeft"]').text
                 item_button = self.driver.find_element_by_xpath(
@@ -49,15 +46,18 @@ class A55JoejuiceSpider(scrapy.Spider):
                     self.driver.execute_script("arguments[0].click();", button)
                     sleep(3)
                     item_page = Selector(text=self.driver.page_source)
-                    sleep(1)
+                    sleep(5)
                     back_button = self.driver.find_element_by_xpath('//button[@data-cy="modal-sticky-header-button"]')
                     self.driver.execute_script("arguments[0].click();", back_button)
-                    sleep(2)
+                    sleep(3)
                 except:
                     print('no nutritional information available ')
                     item_page = Selector(text=self.driver.page_source)
-                self.driver.find_element_by_xpath('//button[@data-cy="modal-sticky-header-button"]').click()
-                sleep(2)
+                try:
+                    self.driver.find_element_by_xpath('//button[@data-cy="modal-sticky-header-button"]').click()
+                    sleep(2)
+                except:
+                    pass
                 allergens = item_page.xpath('//h3[contains(text(),"Allergens")]/parent::div/ul/li')
                 nutrients = item_page.xpath('//h3[contains(text(),"Nutrition")]/parent::div/ul/li')
                 item_dict = {

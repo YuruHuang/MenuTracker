@@ -158,7 +158,7 @@ def RunScript(rest_name):
 
 
 # Selenium Path
-web_browser_path = '/Users/huangyuru/PycharmProjects/MenuStatUK/chromedriver'
+web_browser_path = '/Users/huangyuru/PycharmProjects/MenuTracker/chromedriver'
 
 
 # Downloading PDF for Greene King companies

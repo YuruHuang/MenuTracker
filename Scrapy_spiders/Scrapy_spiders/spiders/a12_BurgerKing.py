@@ -4,6 +4,7 @@ from datetime import date
 from time import sleep
 
 import scrapy
+from browserPath import web_browser_path
 from scrapy import Selector
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -42,13 +43,13 @@ class A12BurgerkingSpider(scrapy.Spider):
     start_urls = ['https://www.burgerking.co.uk/nutrition-explorer']
 
     def __init__(self):
-        self.driver = webdriver.Chrome('/Users/huangyuru/PycharmProjects/MenuStatUK/chromedriver')
+        self.driver = webdriver.Chrome(web_browser_path)
 
     def parse(self, response):
         self.driver.get(response.url)
         sleep(10)
         # accept the cookie
-        self.driver.find_element(by=By.XPATH, value='//button[@data-testid="accept-all-cookies-button"]').click()
+        # self.driver.find_element(by=By.XPATH, value='//button[@data-testid="accept-all-cookies-button"]').click()
         # expand all sections to display all menu items
         # expands = self.driver.find_elements_by_xpath(
         #     '//div[@class="dropdown-arrow__ArrowContainer-sc-143tfyi-0 gLiGSX"]')

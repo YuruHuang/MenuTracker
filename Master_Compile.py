@@ -5,8 +5,7 @@
 import os
 
 from define_collection_wave import folder
-from helpers import combo_PDFDownload, RunSpider, RunScript, java_PDF, greene_king_download, PDFDownloader, \
-    create_folder
+from helpers import combo_PDFDownload, RunSpider, RunScript, java_PDF, greene_king_download
 
 os.system('python define_collection_wave.py')
 
@@ -29,7 +28,7 @@ RunSpider('5_KFC', folder)
 java_PDF('6_Dominos', url='https://corporate.dominos.co.uk/allergens-nutritional')
 
 # 7. Starbucks - previously in PDF format
-combo_PDFDownload('7_Starbucks', url='https://www.starbucks.co.uk/nutrition')
+# combo_PDFDownload('7_Starbucks', url='https://www.starbucks.co.uk/nutrition')
 RunSpider('7_Starbucks', folder)
 
 # 8. PizzaHut - PDF download
@@ -54,7 +53,7 @@ RunSpider('12_BurgerKing', folder)
 RunSpider('13_Pret', folder)
 
 # 14. Caffe Nero -> requests API
-RunScript('14_CaffeNero', folder)
+RunScript('14_CaffeNero')
 
 # 15. Wagamama -> Spider
 RunSpider('15_Wagamama', folder)
@@ -74,7 +73,8 @@ RunSpider('18_Sizzling', folder)
 RunSpider('19_EmberInns', folder)
 
 # 20. Chef & Brewer Pub Co.
-greene_king_download(rest_name='20_Chef', id=6145, url='https://www.chefandbrewer.com/', folder=folder)
+# greene_king_download(rest_name='20_Chef', id=6145, url='https://www.chefandbrewer.com/', folder=folder)
+RunSpider('20_ChefBrewer', folder)
 
 # 21. Table Table
 combo_PDFDownload(url='https://www.tabletable.co.uk/en-gb/allergy-nutrition', rest_name='21_TableTable',
@@ -87,10 +87,13 @@ RunSpider('22_Toby', folder)
 RunSpider('23_Revolution', folder)
 
 # 24. Zizzi
-combo_PDFDownload('24_Zizzi', url='https://www.zizzi.co.uk/menus')
+# combo_PDFDownload('24_Zizzi', url='https://www.zizzi.co.uk/menus')
+# started providing calorie only on web pages
+RunSpider('24_Zizzi', folder)
 
 # 25. Ask Italian
-combo_PDFDownload(rest_name='25_Ask', url='https://www.askitalian.co.uk/allergens/')
+# combo_PDFDownload(rest_name='25_Ask', url='https://www.askitalian.co.uk/allergens/')
+RunSpider('25_Ask', folder)
 
 # 26. Papa Johns - Nutrition calculators available only for US and Canada locations
 combo_PDFDownload('26_PapaJohns', url='https://www.papajohns.co.uk/', prex='https://www.papajohns.co.uk')
@@ -114,6 +117,7 @@ RunScript('31_FlamingGrill')
 # 32. Loch Fyne seafood grill -> No nutrition available
 # combo_PDFDownload('32_LochFyne', prex='https://www.lochfyneseafoodandgrill.co.uk',
 #                   url='https://www.lochfyneseafoodandgrill.co.uk/allergens')
+RunSpider('32_LochFyne', folder)
 
 # 33. PAUL
 RunSpider('33_Paul', folder)
@@ -152,7 +156,7 @@ RunSpider('43_Boostjuice', folder)
 combo_PDFDownload('44_Boswell', 'https://boswellsgroup.com/menu/')
 
 # 45. Brewhouse
-combo_PDFDownload('45_Brewhouse', 'https://www.brewhouseandkitchen.com/venue/hoxton/')
+combo_PDFDownload('45_Brewhouse', 'https://www.brewhouseandkitchen.com/bk-allergies/')
 
 # 46. Cineworld
 combo_PDFDownload('46_Cineworld', url='https://www.cineworld.co.uk/#/', prex='https://www.cineworld.co.uk',
@@ -168,8 +172,10 @@ RunSpider('48_CommonRooms', folder)
 combo_PDFDownload('49_CookhousePub', url='https://www.cookhouseandpub.co.uk/en-gb/allergy-nutrition?intcmp=footer',
                   prex='https://www.cookhouseandpub.co.uk', verify=False)
 
-# 50. Crussh -> terrible website!
-RunSpider('50_Crussh', json=True, folder=folder)
+50.
+Crussh -> terrible
+website!
+RunSpider('50_Crussh', json_=True, folder=folder)
 
 # 51. Farmhouse Inns -> PDF
 greene_king_download(rest_name='51_FarmhouseInns', id='5690', url='https://www.farmhouseinns.co.uk', folder=folder)
@@ -243,9 +249,10 @@ RunSpider('71_ThomasBaker', folder)
 RunSpider('72_TimHortons', folder)
 
 # 73. Top Golf -> PDF only
-tg_path = create_folder('73_TopGolf', folder)
-PDFDownloader(url='https://s3.topgolf.com/uploads/pdf/menus/topgolf-nutritional-information.pdf?v=20200131',
-              filePath=tg_path + '/top-golf-nutritional-information.pdf')
+# tg_path = create_folder('73_TopGolf', folder)
+# PDFDownloader(url='https://s3.topgolf.com/uploads/pdf/menus/topgolf-nutritional-information.pdf?v=20200131',
+#               filePath=tg_path + '/top-golf-nutritional-information.pdf')
+RunSpider('73_TopGolf', folder)
 
 # 74. Town, Kitchen, and Pubs
 RunSpider('74_TownKitchenPubs', folder)
@@ -271,7 +278,8 @@ RunSpider('80_Tossed', folder)
 # 81. Bella Italian
 RunScript('81_BellaItalian')
 
-# 82. Cafe Rouge -> no NI
+# 82. Cafe Rouge
+RunSpider('82_CafeRouge', folder)
 
 # 83. Taco Bell
 RunSpider('83_TacoBell', folder)

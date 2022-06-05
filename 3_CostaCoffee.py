@@ -1,23 +1,24 @@
-import json
-from define_collection_wave import folder
-from helpers import create_folder,web_browser_path
+import re
 from time import sleep
+
+import pandas as pd
+from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
-from bs4 import BeautifulSoup
-import re
-import pandas as pd
+
+from define_collection_wave import folder
+from helpers import create_folder, web_browser_path
 
 path_costa = create_folder('3_CostaCoffee', folder)
 
 costa_url = "https://www.costa.co.uk/menu/"
 options = webdriver.ChromeOptions()
 # options.headless = True  # turn on the headless mode!
-s=Service(web_browser_path)
+s = Service(web_browser_path)
 browser = webdriver.Chrome(service=s)
 browser.get(costa_url)
-sleep(2)
+sleep(10)
 # accept cookie
 browser.find_element(by=By.ID, value='onetrust-accept-btn-handler').click()
 sleep(3)
@@ -64,19 +65,20 @@ def parse_item(page, size=None, milk=None):
     return row_dict
 
 
+
 records = []
 for drink in drink_buttons:
     category = drink.find_element_by_xpath(".//parent::div/preceding-sibling::div[@class='categoryHeader']").text
-    drink.click()
-    sleep(2)
+    browser.execute_script("arguments[0].click();", drink)
+    sleep(5)
     sizes = browser.find_elements(by=By.XPATH, value='//div[@class="filterGroup size"]/button')
-    milk_choices = browser.find_elements(by=By.XPATH, value = '//div[@class="filterGroup milk"]/button')
+    milk_choices = browser.find_elements(by=By.XPATH, value='//div[@class="filterGroup milk"]/button')
     if len(sizes) > 0:
         for size in sizes:
-            size.click()
+            browser.execute_script("arguments[0].click();", size)
             if len(milk_choices) > 0:
                 for milk in range(len(milk_choices)):
-                    milk_choices[milk].click()
+                    browser.execute_script("arguments[0].click();", milk_choices[milk])
                     row = parse_item(page=browser.page_source, milk=milk_choices[milk].text, size=size.text)
                     row.update({'Category': category})
                     records.append(row)
@@ -87,7 +89,7 @@ for drink in drink_buttons:
     else:
         if len(milk_choices) > 0:
             for milk in range(len(milk_choices)):
-                milk_choices[milk].click()
+                browser.execute_script("arguments[0].click();", milk_choices[milk])
                 row = parse_item(page=browser.page_source, milk=milk_choices[milk].text)
                 row.update({'Category': category})
                 records.append(row)
@@ -105,12 +107,15 @@ food_button = browser.find_elements(by=By.CLASS_NAME, value="productItem__Produc
 for food in range(len(food_button)):
     category = food_button[food].find_element_by_xpath(
         ".//parent::div/preceding-sibling::div[@class='categoryHeader']").text
-    food_button[food].click()
+    browser.execute_script("arguments[0].click();", food_button[food])
     sleep(4)
-    row = parse_item(page=browser.page_source)
-    row.update({'Category': category})
-    records.append(row)
-    close_button = browser.find_element(by=By.XPATH, value = '//button[@class="closeButton"]')
+    try:
+        row = parse_item(page=browser.page_source)
+        row.update({'Category': category})
+        records.append(row)
+    except:
+        print('item not captured')
+    close_button = browser.find_element(by=By.XPATH, value='//button[@class="closeButton"]')
     close_button.click()
     sleep(2)
 

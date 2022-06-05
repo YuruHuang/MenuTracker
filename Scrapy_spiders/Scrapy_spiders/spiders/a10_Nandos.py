@@ -1,6 +1,7 @@
 from time import sleep
 
 import scrapy
+from browserPath import web_browser_path
 from scrapy import Selector
 from selenium import webdriver
 
@@ -11,14 +12,11 @@ class A10NandoSpider(scrapy.Spider):
     start_urls = ['https://nandos.co.uk/food/menu/index.html']
 
     def __init__(self):
-        self.driver = webdriver.Chrome("/Users/huangyuru/PycharmProjects/MenuStatUK/chromedriver")
+        self.driver = webdriver.Chrome(web_browser_path)
 
     def parse(self, response):
         self.driver.get(response.url)
-        sleep(1)
-        # accept the cookies
-        self.driver.find_element_by_xpath('//button[@id="truste-consent-button"]').click()
-        sleep(0.5)
+        sleep(10)
 
         items = self.driver.find_elements_by_xpath('//div/button[contains(@title, "Open product description for")]')
         for item in items:
@@ -37,7 +35,7 @@ class A10NandoSpider(scrapy.Spider):
             yield {
                 'Product Name': resp.xpath('//div[@class="inner"]/h3/text()').get(),
                 'Product Description': resp.xpath('//div[@class="inner"]/p/text()').get(),
-                'Product Price': resp.xpath('//div[@class="inner"]/div[@class="price"]/text()').get(),
+                'Product Price': resp.xpath('//div[@class="inner"]/div[contains(@class,"price")]/text()').get(),
                 'Product Category': category,
                 'Energy (kcal) per serving': resp.xpath('//div[@class="block n"]/table/tbody/tr[1]/th[2]/text()').get(),
                 'Energy (kj) per serving': resp.xpath('//div[@class="block n"]/table/tbody/tr[2]/td[2]/text()').get(),

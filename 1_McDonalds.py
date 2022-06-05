@@ -33,7 +33,7 @@ def parse_json(dat):
     dat_dict = {
         'Product_Name': dat.get('item').get('item_name'),
         'Product_Title': dat.get('item').get('item_meta_title'),
-        'Product_Description': dat.get('item').get('item_meta_description'),
+        'Product_Description': dat.get('item').get('description'),
         'Product_Ingredients': cleanhtml(dat.get('item').get('item_ingredient_statement')),
         'Product_Category': dat.get('item').get('default_category').get('category').get('name') if dat.get('item').get(
             'default_category') else 'NA',

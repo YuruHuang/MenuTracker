@@ -19,34 +19,36 @@ class A80TossedSpider(scrapy.Spider):
 
     def __init__(self):
         op = webdriver.ChromeOptions()
-        op.add_argument('headless')
+        # op.add_argument('headless')
         self.driver = webdriver.Chrome(web_browser_path, options=op)
 
     def parse(self, response):
         self.driver.get(response.url)
-        sleep(3)
-        categories = self.driver.find_elements_by_xpath('//a[@data-test="store.menu.category.bundles"]')
-        cat_names = self.driver.find_elements_by_xpath('//a[@data-test="store.menu.category.bundles"]/span')
+        sleep(10)
+        categories = self.driver.find_elements(By.XPATH, '//a[@data-test="store.menu.category.bundles"]')
+        cat_names = self.driver.find_elements(By.XPATH, '//a[@data-test="store.menu.category.bundles"]/span')
         category_urls = [cat.get_attribute('href') for cat in categories]
         category_names = [cat.text for cat in cat_names]
         for i in range(len(category_urls)):
             self.driver.get(category_urls[i])
             cat_name = category_names[i]
             sleep(3)
-            items = self.driver.find_elements(by=By.XPATH, value='//div[@class="css-1fo9epc epmm7pg14"]')
+            items = self.driver.find_elements(by=By.XPATH, value='//div[@data-test-type="meal2.0"]')
             for i in range(len(items)):
                 sleep(2)
-                self.driver.find_elements(by=By.XPATH, value='//div[@class="css-1fo9epc epmm7pg14"]')[i].click()
+                self.driver.execute_script("arguments[0].click();", self.driver.find_elements(by=By.XPATH,
+                                                                                              value='//div[@data-test-type="meal2.0"]')[
+                    i])
                 sleep(3)
                 try:
-                    self.driver.find_elements(by=By.XPATH, value='//li[@data-test="tab-Nutrition"]').click()
+                    self.driver.find_element(by=By.XPATH, value='//li[@data-test="tab-Nutrition"]').click()
                     sleep(2)
                     soup = Selector(text=self.driver.page_source)
                     nutrition = soup.xpath('//div[@data-test="tab-panel-nutrition"]//li')
                     nutrition_dict = {nutrient.xpath('./span[1]/text()').get():
                                           nutrient.xpath('./span[2]/text()').get() for nutrient in nutrition}
-                    item_name = soup.xpath('//h1[@class="css-1qumsvy erfj5ip0"]/text()').get()
-                    item_description = soup.xpath('//div[@class="css-1d2gjik e1f6os760"]/p/text()').get()
+                    item_name = soup.xpath('//h1[@class="css-94q40e e88axzs0"]/text()').get()
+                    item_description = soup.xpath('//div[@class="css-izbaa7 e1qplo9o0"]/p/text()').get()
                     # if item_name is None:
                     #     item_name = soup.xpath('//div[@class="css-1b960qj eii5z642"]//h1/text()').get()
                     #     item_description = soup.xpath('//div[@class="css-1e832z0 eii5z645"]/p/text()').get()
@@ -64,7 +66,7 @@ class A80TossedSpider(scrapy.Spider):
                     yield item_dict
                 except:
                     try:
-                        self.driver.find_element_by_xpath(
-                            "//button[@data-test='customization-page-back-button']").click()
+                        self.driver.find_element(By.XPATH,
+                                                 "//button[@data-test='customization-page-back-button']").click()
                     except:
                         pass

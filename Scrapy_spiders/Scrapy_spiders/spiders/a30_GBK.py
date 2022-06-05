@@ -6,7 +6,7 @@ import scrapy
 class A30GbkSpider(scrapy.Spider):
     name = '30_GBK'
     allowed_domains = ['menus.tenkites.com']
-    start_urls = ['https://menus.tenkites.com/boparan/gourmetburgerkitchen']
+    start_urls = ['https://menus.tenkites.com/brg/gourmetburgerkitchen']
 
     def parse(self, response):
         categories = response.xpath(

@@ -5,8 +5,8 @@ import scrapy
 
 class A36BillsSpider(scrapy.Spider):
     name = '36_Bills'
-    allowed_domains = ['menus.tenkites.com']
-    start_urls = ['https://menus.tenkites.com/bills/bills']
+    allowed_domains = ['menus.tenkites.com', 'viewthe.menu']
+    start_urls = ['https://viewthe.menu/ywbv']
 
     def parse(self, response):
         cat_links = response.xpath('//div[@class="k10-menu-selector__options"]//span/@data-menu-identifier').getall()
@@ -14,7 +14,7 @@ class A36BillsSpider(scrapy.Spider):
         for cat_link in cat_links:
             # print(cat_link)
             yield scrapy.Request(
-                url=f'https://menus.tenkites.com//bills/bills?cl=true&mguid={cat_link}&internalrequest=true',
+                url=f'https://menus.tenkites.com//bills/bills02?cl=true&mguid={cat_link}&internalrequest=true',
                 callback=self.parse_item)
 
     def parse_item(self, response):

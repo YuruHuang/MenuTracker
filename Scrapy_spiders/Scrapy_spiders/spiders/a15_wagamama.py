@@ -2,6 +2,7 @@ from datetime import date
 from time import sleep
 
 import scrapy
+from browserPath import web_browser_path
 from scrapy import Selector
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -13,16 +14,17 @@ class A15WagamamaSpider(scrapy.Spider):
     start_urls = ['https://www.wagamama.com/our-menu']
 
     def __init__(self):
-        self.driver = webdriver.Chrome('/Users/huangyuru/PycharmProjects/MenuStatUK/chromedriver')
+        self.driver = webdriver.Chrome(web_browser_path)
 
     def parse(self, response):
         self.driver.get(response.url)
-        sleep(10)
+        sleep(20)
         # accept cookies
-        self.driver.find_element(by=By.XPATH, value='//button[@id="onetrust-accept-btn-handler"]').click()
+        # self.driver.find_element(by=By.XPATH, value='//button[@id="onetrust-accept-btn-handler"]').click()
 
         while len(self.driver.find_elements(by=By.XPATH, value='//li[@data-status="lazy"]')) > 0:
-            self.driver.find_element(by=By.XPATH, value='//li[@data-status="lazy"]').click()
+            toclick = self.driver.find_element(by=By.XPATH, value='//li[@data-status="lazy"]')
+            self.driver.execute_script("arguments[0].click();", toclick)
             sleep(10)
 
         # categories = self.driver.find_elements_by_xpath('//ul[@class="k10-course-selector__wrapper-l1"]/li/span[@class="k10-course-selector__name"]')

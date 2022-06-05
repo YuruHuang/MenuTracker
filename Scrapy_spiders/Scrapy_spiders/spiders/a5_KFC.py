@@ -3,8 +3,10 @@ from datetime import date
 from time import sleep
 
 import scrapy
+from browserPath import web_browser_path
 from scrapy import Selector
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 
 
 class A5KfcSpider(scrapy.Spider):
@@ -13,7 +15,10 @@ class A5KfcSpider(scrapy.Spider):
     start_urls = ['https://www.kfc.co.uk/nutrition-allergens']
 
     def __init__(self):
-        self.driver = webdriver.Chrome('/Users/huangyuru/PycharmProjects/MenuStatUK/chromedriver')
+        options = webdriver.ChromeOptions()
+        # options.headless = True  # turn on the headless mode!
+        s = Service(web_browser_path)
+        self.driver = webdriver.Chrome(service=s)
 
     def parse(self, response):
         self.driver.get(response.url)
