@@ -61,7 +61,7 @@ clean_columns = function(data){
                      'kj','kcal','fat_100','fat','satfat_100',
                      'satfat','carb_100','carb','sugar_100','sugar','fibre_100',
                      'fibre','protein_100','protein','salt_100','salt',
-                     'sodium','sodium_100','servingsize','starch')
+                     'sodium','sodium_100','servingsize','starch','caffeine')
   data %>% mutate_if(names(.) %in% nutrient_list, clean_numeric)
 }
 # read converted excel files from PDFs
@@ -78,7 +78,7 @@ pdf_combine = function(folder_name,rest_name){
   data = lapply(data, clean_columns)
   all = do.call('bind_rows',data)
   all$rest_name = rest_name
-  all$collection_date = str_split(str_split(file,'/')[[1]][2],'_')[[1]][2]
+  all$collection_date = str_split(str_split(file,'/')[[1]][2],'_')[[1]][3]
   return(all)
 }
 # check Before Binding 
@@ -127,4 +127,30 @@ dup_cols = function(data){
     print(paste('Coalesced',col_d1,col_d2,sep=" "))
   }
   return (data)
+}
+
+# this function is to clean datasets with line breaks in item name (results in 2 rows) 
+# can be used for PDFs from Yo!Sushi and Marston's pub
+# add item name parts to the previous row and delete the current row 
+clean_row_name = function(i,data){
+  colnames(data)[1] = 'item_name'
+  item_name1 = data[i-1, 1] 
+  item_name2 = data[i,1]
+  item_name_ = paste(item_name1, item_name2, sep=' ')
+  data[i-1, item_name:=item_name_]
+  # data = data[-i]
+  return(data)
+}
+yosushi_cleaner = function(rest_name, name){
+  data = pdf_convert(rest_name, name)
+  # find rows without energy information
+  row_n = which(is.na(data$kcal))
+  data = data.table(data)
+  for (row in row_n){
+    data = clean_row_name(row, data)
+  }
+  
+# delete the ones without item name or kcal 
+  data = data[(!is.na(item_name))& !(is.na(kcal))]
+  return(data)
 }
