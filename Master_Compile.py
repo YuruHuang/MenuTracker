@@ -5,7 +5,7 @@
 import os
 
 from define_collection_wave import folder
-from helpers import combo_PDFDownload, RunSpider, RunScript, java_PDF, greene_king_download
+from helpers import combo_PDFDownload, RunSpider, RunScript, java_PDF, greene_king_download, combo_imgDownload
 
 os.system('python define_collection_wave.py')
 
@@ -29,7 +29,8 @@ java_PDF('6_Dominos', url='https://corporate.dominos.co.uk/allergens-nutritional
 
 # 7. Starbucks - previously in PDF format
 # combo_PDFDownload('7_Starbucks', url='https://www.starbucks.co.uk/nutrition')
-RunSpider('7_Starbucks', folder)
+# RunSpider('7_Starbucks', folder)
+RunScript('7_starbucks')
 
 # 8. PizzaHut - PDF download
 combo_PDFDownload(url='https://www.pizzahut.co.uk/restaurants/food/nutritional-information/', prex=
@@ -285,6 +286,7 @@ RunSpider('82_CafeRouge', folder)
 RunSpider('83_TacoBell', folder)
 
 # 84. Coco di mama -> no NI anymore
+RunSpider('84_Coco',folder)
 
 # 85. The real greek
 RunSpider('85_RealGreek', folder)
@@ -295,3 +297,7 @@ combo_PDFDownload('86_HonestBurger', url='https://www.honestburgers.co.uk/allerg
 
 # 87. AMT
 combo_PDFDownload('87_AMT', url='http://amtcoffee.co.uk/types/drinks/')
+
+# 88. Chicken Cottage
+combo_imgDownload('88_ChickenCottage','https://chickencottage.com/our-food/',folder)
+

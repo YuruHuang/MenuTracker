@@ -113,6 +113,26 @@ def java_PDF(rest_name, url, prex=None, link_=True, xpath_=None):
         PDFDownloader(url=url_link, filePath=filePath)
     browser.quit()
 
+def IMGDownloader(url, filePath):
+    img_data = requests.get(url).content
+    with open(filePath, 'wb') as handler:
+        handler.write(img_data)
+
+def combo_imgDownload(rest_name,url,folder):
+    path = create_folder(rest_name, folder)
+    s = Service(web_browser_path)
+    browser = webdriver.Chrome(service=s)
+    browser.get(url)
+    sleep(3)
+    images = browser.find_elements(by=By.XPATH, value='//img[contains(@src, "jpeg")]')
+    for image in images:
+        image_link = image.get_attribute("src")
+        image_name = image_link.split('/')[-1]
+        image_path = path + '/' + image_name
+        IMGDownloader(image_link,image_path)
+
+
+
 
 def create_folder(rest_name, folder):
     '''
