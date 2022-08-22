@@ -9,20 +9,16 @@ library(dplyr)
 library(readxl)
 library(openxlsx)
 
-source('Helpers.R')
-
 rm(list = ls())
 
-wd = '/Users/huangyuru/PycharmProjects/MenuTracker/June_collection_2022' # fill in your working dictionary
+wd = 'C://Users//yh459//OneDrive - University of Cambridge//MenuTracker//MenuTracker//September_collection_2022' # fill in your working dictionary
 
 setwd(wd)
 
+source('..//DataMerge/Helpers.R')
 
 # 1. Mcdonald's 
-mcdonalds_file = list.files(list.files(pattern='mcdonalds',full.names=TRUE,ignore.case = TRUE),pattern='.csv',full.names = TRUE)
-mcdonalds = read_csv(mcdonalds_file)
-mcdonalds$collection_date = str_split(list.files(pattern='mcdonalds',ignore.case=TRUE),pattern='_')[[1]][3]
-mcdonalds$rest_name = 'McDonalds UK'
+mcdonalds = pdf_convert('mcdonalds', 'McDonalds UK')
 
 # calculate the serving sizes based on the density and per serving values
 mcdonalds$servingsize = mcdonalds$energy_kcal_Quantity/mcdonalds$energy_kcal_100_g_per_product*100
@@ -47,11 +43,7 @@ colnames(mcdonalds_select) =names
 #write_csv(mcdonalds_select,filename)
 
 # 2. wetherspoon
-wetherspoon = read_data('Wetherspoon')
-wetherspoon$collection_date = str_split(list.files(pattern='wetherspoon',ignore.case = TRUE),pattern='_')[[1]][3]
-wetherspoon$rest_name = 'Wetherspoon'
-
-
+wetherspoon = pdf_convert('Wetherspoon', 'Wetherspoon')
 wetherspoon_select = wetherspoon %>% select ('ProductId','collection_date','rest_name','Category','Name','Summary',
                                              'Calories','Protein',
                                          'Carbohydrates', 'Sugar','Fat','SaturatedFat',
@@ -61,8 +53,9 @@ names<-c('menu_id','collection_date','rest_name','menu_section','item_name','ite
          'kcal','protein','carb','sugar','fat',
          'satfat','fibre','salt','ingredients','allergens','new')
 colnames(wetherspoon_select) =names
+data_all = mcdonalds_select
 check_bb(wetherspoon_select)
-wetherspoon_select$menu_id = as.character(wetherspoon_select$menu_id)
+# wetherspoon_select$menu_id = as.character(wetherspoon_select$menu_id)
 
 # create data_all (merged data.frame)
 data_all = bind_rows(mcdonalds_select,wetherspoon_select)
@@ -113,20 +106,29 @@ costa_select = bind_rows(instore, takeaway)
 dim(costa_select)
 View(costa_select)
 
-costa_select$servingsize=as.numeric(costa_select$servingsize)
+# costa_select$servingsize=as.numeric(costa_select$servingsize)
 check_bb(costa_select)
 data_all = bind_rows(data_all,costa_select)
 dim(data_all)
 
 # 4. Greggs 
 ## the script was rewritten 
-greggs_file = list.files(list.files(pattern='greggs',full.names=TRUE,ignore.case = TRUE),pattern='.csv',full.names = TRUE)
-greggs = read_csv(greggs_file)
-colnames(greggs)[9:24] = c('menu_section','allergens','kcal','kcal_100','fat','fat_100','satfat','satfat_100',
-                            'sugar','sugar_100','salt','salt_100','protein','protein_100',
-                            'carb','carb_100')
-greggs = greggs[,2:24]
+greggs = read_data('Greggs')
+# mapping the names
+colnames_g = colnames(greggs)
+colnames_to_recode = c('category','allergens', 'Calories','Calories_100',"Carbohydrates", "Carbohydrates_100", "Fat", "Fat_100", "Protein", "Protein_100",
+                    "Salt", "Salt_100", "Saturates", "Saturates_100", "Sugar", "Sugar_100"  )
+colnames_recoded = c('menu_section', 'allergens','kcal','kcal_100','carb', 'carb_100', 'fat','fat_100',
+                     'protein','protein_100', 'salt','salt_100','satfat','satfat_100','sugar','sugar_100')
+colnames_recode_df = data.frame(colnames_to_recode, colnames_recoded)
+
+names_to_replace = colnames_recode_df$colnames_recoded[match(colnames_g, colnames_recode_df$colnames_to_recode)]
+names_to_replace_index = which(!is.na(names_to_replace))
+names(greggs)[names_to_replace_index] = names_to_replace[names_to_replace_index]
+
+greggs = greggs[2:length(colnames_g)]
 check_bb(greggs)
+greggs$servingsize = as.character(greggs$servingsize)
 data_all = bind_rows(data_all,greggs)
 
 # 5. KFC
@@ -183,7 +185,7 @@ subway = read_data('Subway')
 colnames(subway)<-c('collection_date','rest_name','menu_section','menu_id',
                     'item_name','item_description','servingsize','kj','kcal','fat','satfat',
                     'carb','sugar','fibre','protein','salt')
-subway$menu_id = as.character(subway$menu_id)
+# subway$menu_id = as.character(subway$menu_id)
 check_bb(subway)
 subway$servingsize = as.character(subway$servingsize)
 data_all<-bind_rows(data_all,subway)

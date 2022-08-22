@@ -100,19 +100,18 @@ category_links = ['https://www.mcdonalds.com' + category.get('href') for categor
 category_links = set(category_links)
 item_ids = []
 for category_link in category_links:
-    #print(category_link)
+    # print(category_link)
     r = requests.get(category_link)
     soup = BeautifulSoup(r.text,'html.parser')
-    items = soup.find_all('a', {"class": 'categories-item-link'}) #the new path
+    items = soup.find_all('li', {"class": 'cmp-category__item'}) #the new path
     # old path
     if len(items) == 0:
         items = soup.find_all('a', {"class": 'mcd-category-page__item-link'})
-    ids = [item['data-at'].split(':')[3] for item in items[:-1]]
-    #print(len(ids))
+    ids = [item['data-product-id'] for item in items]
+    # print(ids)
     item_ids.append(ids)
 
 item_ids = list(flatten(item_ids))
-item_ids = [item_id.replace('a','') for item_id in item_ids]
 item_ids = set(item_ids)
 
 mcdonalds_list = []

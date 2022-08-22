@@ -173,12 +173,10 @@ RunSpider('48_CommonRooms', folder)
 combo_PDFDownload('49_CookhousePub', url='https://www.cookhouseandpub.co.uk/en-gb/allergy-nutrition?intcmp=footer',
                   prex='https://www.cookhouseandpub.co.uk', verify=False)
 
-50.
-Crussh -> terrible
-website!
+50.Crussh -> terrible website!
 RunSpider('50_Crussh', json_=True, folder=folder)
 
-# 51. Farmhouse Inns -> PDF
+51. Farmhouse Inns -> PDF
 greene_king_download(rest_name='51_FarmhouseInns', id='5690', url='https://www.farmhouseinns.co.uk', folder=folder)
 
 # 52. Five guys -> PDF

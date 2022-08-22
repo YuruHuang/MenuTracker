@@ -18,11 +18,11 @@ options = webdriver.ChromeOptions()
 s = Service(web_browser_path)
 browser = webdriver.Chrome(service=s)
 browser.get(costa_url)
-sleep(10)
+sleep(20)
 # accept cookie
 browser.find_element(by=By.ID, value='onetrust-accept-btn-handler').click()
 sleep(3)
-drink_buttons = browser.find_elements(by=By.CLASS_NAME, value= "productItem__Product-gctefu-0")
+drink_buttons = browser.find_elements(by=By.XPATH, value= '//div[@data-cy = "product-item"]')
 
 def parse_item(page, size=None, milk=None):
     soup = BeautifulSoup(page, 'html.parser')
@@ -68,7 +68,8 @@ def parse_item(page, size=None, milk=None):
 
 records = []
 for drink in drink_buttons:
-    category = drink.find_element_by_xpath(".//parent::div/preceding-sibling::div[@class='categoryHeader']").text
+    category = drink.find_element(by = By.XPATH, value = ".//parent::div/preceding-sibling::div[@class='categoryHeader']").text
+    # print(category)
     browser.execute_script("arguments[0].click();", drink)
     sleep(5)
     sizes = browser.find_elements(by=By.XPATH, value='//div[@class="filterGroup size"]/button')
@@ -101,8 +102,9 @@ for drink in drink_buttons:
     close_button.click()
     sleep(2)
 
-browser.find_elements(by=By.XPATH, value = '//div[@class="pageSelect__StyledPageSelect-k46clq-0 dGJnrT"]/button')[1].click()
-food_button = browser.find_elements(by=By.CLASS_NAME, value="productItem__Product-gctefu-0")
+browser.find_element(by=By.XPATH, value = '//button[@data-cy ="page-select__food"]').click()
+food_button = browser.find_elements(by=By.XPATH, value= '//div[@data-cy = "product-item"]')
+
 
 for food in range(len(food_button)):
     category = food_button[food].find_element_by_xpath(

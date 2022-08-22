@@ -8,20 +8,22 @@ library(tidyr)
 library(dplyr)
 library(readxl)
 library(openxlsx)
-source('Helpers.R')
+source('..//DataMerge/Helpers.R')
 
 rm(list = ls())
 
-wd = 'your_working_dict' # fill in your working dictionary
+wd = 'C://Users//yh459//OneDrive - University of Cambridge//MenuTracker//MenuTracker//September_collection_2022' # fill in your working dictionary
 
 setwd(wd)
 
 
 # 1. Mcdonald's 
-mcdonalds_file = list.files(list.files(pattern='mcdonalds',full.names=TRUE,ignore.case = TRUE),pattern='.csv',full.names = TRUE)
+
+
+list.files(list.files(pattern='mcdonalds',full.names=TRUE,ignore.case = TRUE),pattern='.csv',full.names = TRUE)
 mcdonalds = read_csv(mcdonalds_file)
 mcdonalds$collection_date = str_split(list.files(pattern='mcdonalds',ignore.case=TRUE),pattern='_')[[1]][3]
-mcdonalds$rest_name = 'McDonalds UK'
+mcdonalds$rest_name = ''
 
 # calculate the serving sizes based on the density and per serving values
 mcdonalds$servingsize = mcdonalds$energy_kcal_Quantity/mcdonalds$energy_kcal_100_g_per_product*100

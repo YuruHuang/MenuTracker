@@ -45,7 +45,7 @@ def parse_nutrition(page_json,item_name,menu_id, elementId, milk_value, size_val
 # get different sizes
 starbucks = []
 
-for item in item_all[101:]:
+for item in item_all:
     item_id = item.get('productNumber')
     item_name = item.get('name')
     print(item_name)

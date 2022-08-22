@@ -66,14 +66,14 @@ clean_columns = function(data){
 }
 # read converted excel files from PDFs
 pdf_convert = function(folder_name,rest_name,i=1){
-  file= list.files(list.files(pattern=folder_name,full.names=TRUE),pattern='.csv',full.names = TRUE)
+  file= list.files(list.files(pattern=folder_name,full.names=TRUE, ignore.case = TRUE),pattern='.csv',full.names = TRUE)
   data = read_csv(file[i])
   data$rest_name = rest_name
   data$collection_date = str_split(str_split(file,'/')[[1]][2],'_')[[1]][3]
   return(data)
 }
 pdf_combine = function(folder_name,rest_name){
-  file = list.files(list.files(pattern=folder_name,full.names=TRUE),pattern='.csv',full.names = TRUE)
+  file = list.files(list.files(pattern=folder_name,full.names=TRUE, ignore.case = TRUE),pattern='.csv',full.names = TRUE)
   data = lapply(file,read_csv)
   data = lapply(data, clean_columns)
   all = do.call('bind_rows',data)
