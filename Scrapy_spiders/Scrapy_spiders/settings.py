@@ -90,5 +90,7 @@ DOWNLOADER_MIDDLEWARES = {
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 SELENIUM_DRIVER_NAME = 'chrome'
-SELENIUM_DRIVER_EXECUTABLE_PATH = "/Users/huangyuru/PycharmProjects/MenuTracker/chromedriver"
+
+from browserPath import web_browser_path
+SELENIUM_DRIVER_EXECUTABLE_PATH = web_browser_path# Chrome driver path
 SELENIUM_DRIVER_ARGUMENTS = ['-headless']  # '--headless' if using chrome instead of firefox
