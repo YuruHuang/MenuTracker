@@ -22,15 +22,15 @@ class A10NandoSpider(scrapy.Spider):
         for item in items:
             category = item.find_element_by_xpath('./parent::div/preceding-sibling::h2/em').text
             self.driver.execute_script("arguments[0].click();", item)
-            sleep(1)
+            sleep(2)
             item_button = self.driver.find_element_by_xpath(
                 '//ul[@class="tablist"]/li[text()="Nutritional information"]')
             self.driver.execute_script("arguments[0].click();", item_button)
-            sleep(1)
+            sleep(2)
             resp = Selector(text=self.driver.page_source)
             close_button = self.driver.find_element_by_xpath('//a[@class="close"]')
             self.driver.execute_script("arguments[0].click();", close_button)
-            sleep(1)
+            sleep(2)
             # assuming all products have the same nutrients
             yield {
                 'Product Name': resp.xpath('//div[@class="inner"]/h3/text()').get(),

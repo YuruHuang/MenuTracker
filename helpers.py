@@ -1,6 +1,8 @@
 import json
 import os
 import re
+from ssl import OP_SINGLE_DH_USE
+from tkinter import E
 import urllib
 from datetime import date
 from time import sleep
@@ -13,12 +15,20 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 
 from define_collection_wave import folder
+import platform
 
-# Define user headers
-headers = {
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36',
-    'Accept': 'application/json'
-}
+# Define paths 
+root_path = 'C:\\Users\\yh459\\OneDrive - University of Cambridge\\MenuTracker\\MenuTracker'
+web_browser_path = os.path.join(root_path, 'chromedriver.exe')
+
+
+# windows or osx
+if platform.system() == 'Windows':
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'}
+    operation_system = 'Windows'
+else:
+    headers = {'User-Agent': 'Mozilla/5.0 (Linuxintosh; Intel Linux OS X 10_15_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.1 Safari/605.1.15'}
+    operation_system = 'Linux'
 
 
 # function to remove html tags
@@ -35,6 +45,18 @@ def cleanhtml(raw_html):
         cleantext = re.sub(cleanr, '', raw_html)
         return cleantext
 
+# function to create a folder for each restaurant
+def create_folder(rest_name, folder):
+    '''
+    Creates a folder for each restaurant
+    :param rest_name: the name of the restaurant folder
+    :return: a new folder for the restaurant will be created
+    '''
+    rest_folder  =  rest_name + '_' + date.today().strftime("%b-%d-%Y")
+    path = os.path.join(folder, rest_folder)
+    if not os.path.exists(path):
+        os.makedirs(path)
+    return path
 
 # function: download a PDF file
 def PDFDownloader(url, filePath, verif=True):
@@ -63,8 +85,7 @@ def combo_PDFDownload(rest_name, url, keyword='pdf', prex=None, verify=True):
     :param verify: True or False. whether to allow authentication
     :return: multiple downloaded PDFs
     '''
-    path = folder + '/' + rest_name + '_' + date.today().strftime("%b-%d-%Y")
-    os.mkdir(path)
+    path = create_folder(rest_name, folder)
     html = requests.get(url, headers=headers, verify=verify)
     soup = BeautifulSoup(html.text, 'html.parser')
     urls = soup.select(f"a[href*={keyword}]")
@@ -76,8 +97,11 @@ def combo_PDFDownload(rest_name, url, keyword='pdf', prex=None, verify=True):
             url_link = prex + url_link
         filename = url_link.split('/')[-1]
         if filename[-3:] != 'pdf':
-            filename = filename + '.pdf'
-        filePath = path + '/' + filename
+            if '.pdf' in filename: 
+                filename = filename.split('?')[0]
+            else: 
+                filename = filename + '.pdf'
+        filePath = os.path.join(path,  filename) # path to save the PDF file
         print(url_link)
         print(filePath)
         PDFDownloader(url=url_link, filePath=filePath)
@@ -106,8 +130,12 @@ def java_PDF(rest_name, url, prex=None, link_=True, xpath_=None):
             url_link = prex + url_link
         filename = url_link.split('/')[-1]
         if filename[-3:] != 'pdf':
-            filename = filename + '.pdf'
-        filePath = path + '/' + filename
+            if '.pdf' in filename: 
+                filename = filename.split('?')[0]
+                print(filename)
+            else: 
+                filename = filename + '.pdf'
+        filePath = os.path.join(path,  filename) # path to save the PDF file
         print(url_link)
         print(filePath)
         PDFDownloader(url=url_link, filePath=filePath)
@@ -128,21 +156,9 @@ def combo_imgDownload(rest_name,url,folder):
     for image in images:
         image_link = image.get_attribute("src")
         image_name = image_link.split('/')[-1]
-        image_path = path + '/' + image_name
+        image_path = os.path.join(path, image_name)
         IMGDownloader(image_link,image_path)
 
-
-
-
-def create_folder(rest_name, folder):
-    '''
-    Creates a folder for each restaurant
-    :param rest_name: the name of the restaurant folder
-    :return: a new folder for the restaurant will be created
-    '''
-    path_temp = './' + folder + '/' + rest_name + '_' + date.today().strftime("%b-%d-%Y")
-    os.mkdir(path_temp)
-    return path_temp
 
 # function: create a folder and run the spider
 def RunSpider(spidername, folder, json_=False):
@@ -150,22 +166,40 @@ def RunSpider(spidername, folder, json_=False):
     This function allows the spiders to run and saves the spider outputs
     :param spidername: the name of the spider you want to run
     :param folder: folder for the data collection wave
-    :param json: Default is False (file saving as csv).
+    :param json_: Default is False (file saving as csv).
     :return: spider output saved in csv or json
     '''
-    absolute_path = '/Users/huangyuru/PycharmProjects/MenuTracker'
-    os.chdir(absolute_path)
-    path = create_folder(spidername, folder)
-    os.chdir(absolute_path + '/Scrapy_spiders')
-    if json_ is True:
-        os.system("scrapy crawl " + spidername + " -o " + absolute_path + path[1:] + '/' + spidername + '_items.json')
-        with open(absolute_path + path[1:] + '/' + spidername + '_items.json') as jsonfile:
-            json_data = json.load(jsonfile)
-        json_df = pd.DataFrame(json_data)
-        json_df.to_csv(absolute_path + path[1:] + '/' + spidername + '_items.csv')
-    else:
-        os.system("scrapy crawl " + spidername + " -o " + absolute_path + path[1:] + '/' + spidername + '_items.csv')
-    os.chdir(absolute_path)
+    op_sys = platform.system() # for the windows system, I will use the relative path for the file storage path
+    os.chdir(root_path)
+    path = create_folder(spidername, folder) # create a folder for the spider output
+    os.chdir('./Scrapy_spiders')
+    if op_sys == 'Windows': 
+        if json_:
+            json_file_name = spidername + '_items.json'
+            json_file_path = os.path.join(path, json_file_name)
+            os.system("scrapy crawl " + spidername + " -o ..\\" + json_file_path)
+            with open('..\\' + json_file_path,'r') as jsonfile:
+                json_data = json.load(jsonfile)
+            json_df = pd.DataFrame(json_data)
+            json_df.to_csv(json_file_path.replace('.json', '.csv'), index=False)
+        else:
+            csv_file_name = spidername + '_items.csv'
+            csv_file_path = os.path.join(path, csv_file_name)
+            os.system("scrapy crawl " + spidername + " -o ..\\" + csv_file_path)
+    else: 
+        if json_:
+            json_file_name = spidername + '_items.json'
+            json_file_path_root = os.path.join(root_path, path, json_file_name)
+            os.system("scrapy crawl " + spidername + " -o" + json_file_path_root)
+            with open(json_file_path_root,'r') as jsonfile:
+                json_data = json.load(jsonfile)
+            json_df = pd.DataFrame(json_data)
+            json_df.to_csv(json_file_path_root.replace('.json', '.csv'), index=False)
+        else:
+            csv_file_name = spidername + '_items.csv'
+            csv_file_path_root = os.path.join(root_path, path, csv_file_name)
+            os.system("scrapy crawl " + spidername + " -o " + csv_file_path_root)
+    os.chdir(root_path)
     print('finished scraping ' + spidername)
 
 # function: run the script for a restaurant (requests)
@@ -175,11 +209,6 @@ def RunScript(rest_name):
         print('Successfully scraped ' + rest_name)
     except:
         print('Issues with' + rest_name + '. Please Review')
-
-
-# Selenium Path
-web_browser_path = '/Users/huangyuru/PycharmProjects/MenuTracker/chromedriver'
-
 
 # Downloading PDF for Greene King companies
 def greene_king_download(rest_name, id, url, folder):
@@ -192,5 +221,5 @@ def greene_king_download(rest_name, id, url, folder):
         for url_pdf in url_pdfs:
             if url_pdf is not None:
                 url_pdf = url + url_pdf
-                path_temp = path + '/' + url_pdf.split('/')[-1]
+                path_temp = os.path.join(path, url_pdf.split('/')[-1]) # path to save the PDF file
                 PDFDownloader(url_pdf, path_temp)

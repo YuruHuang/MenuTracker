@@ -4,9 +4,7 @@ from datetime import date
 import scrapy
 from scrapy import Selector
 from selenium import webdriver
-
-sys.path.append('/Users/huangyuru/PycharmProjects/MenuTracker')
-from helpers import web_browser_path
+from browserPath import web_browser_path
 
 
 class A56LeonSpider(scrapy.Spider):
