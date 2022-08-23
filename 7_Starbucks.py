@@ -73,9 +73,14 @@ for item in item_all:
                 milks = [c for c in customisations_milk if c.get('name') == 'milk-&-dairy-alternatives'][0].get('options')
                 for milk in milks:
                     milk_label = milk.get('label')
-                    page_milk_size = requests.post(f'https://www.starbucks.co.uk/menu/product/info/{item_id}',
-                                                   json = {str(milk.get('value')):"1","productId":size_value}
-                                                   ).json()
+                    if milk.get('tag') == 'default': 
+                        page_milk_size = requests.post(f'https://www.starbucks.co.uk/menu/product/info/{item_id}',
+                                json = {"productId":size_value}
+                                ).json()
+                    else:
+                        page_milk_size = requests.post(f'https://www.starbucks.co.uk/menu/product/info/{item_id}',
+                                                        json = {str(milk.get('value')):"1","productId":size_value}
+                                                        ).json()
                     sleep(1)
                     row = parse_nutrition(page_milk_size,item_name,item_id, elementId, milk_label, size_label,url)
                     print(row)
@@ -83,8 +88,8 @@ for item in item_all:
                     starbucks.append(row)
             except:
                 page_size = requests.post(f'https://www.starbucks.co.uk/menu/product/info/{item_id}',
-                                                   json = {"productId":item_id,"value":size_value,"name":"size"}
-                                                   ).json()
+                                                    json = {"productId":item_id,"value":size_value,"name":"size"}
+                                                    ).json()
                 sleep(1)
                 row = parse_nutrition(page_milk_size,item_name,item_id, elementId,  None, size_label,url)
                 print(row)
