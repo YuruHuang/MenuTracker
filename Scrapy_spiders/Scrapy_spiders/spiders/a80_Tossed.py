@@ -1,11 +1,9 @@
 import sys
 
 import scrapy
-
-sys.path.extend(['/Users/huangyuru/PycharmProjects/MenuTracker'])
 from datetime import date
 from selenium import webdriver
-from helpers import web_browser_path
+from browserPath import web_browser_path
 from time import sleep
 from scrapy import Selector
 from selenium.webdriver.common.by import By
