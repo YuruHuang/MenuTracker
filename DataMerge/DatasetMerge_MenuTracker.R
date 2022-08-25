@@ -153,25 +153,24 @@ dim(data_all)
 
 # 7. Starbucks 
 starbucks = read_data('Starbucks')
-starbucks = separate(starbucks, 'energy', into=c('kcal','kj'))
+starbucks = separate(starbucks, 'energy', into=c('kj','kcal'))
 # starbucks$caffeine=NULL
 starbucks = data.table(starbucks)
-colnames(starbucks)[14] <- 'satfat'
-colnames(starbucks)[15]<-'carb'
-# servingsize 
-#starbucks[starbucks$servingsize %in% c('Grande','Dopio','Short','Mini','Tall'),item_name:=paste(item_name,servingsize,sep=', ')]
-#starbucks[starbucks$servingsize =='1 Piece', servingsize:=NA]
+names_star = colnames(starbucks)
+names_star = gsub("saturatedFat", "satfat", names_star)
+names_star = gsub("carbohydrates", "carb", names_star)
+names_star = gsub("servingSize", "servingsize", names_star)
+names(starbucks) = names_star
 starbucks = clean_columns(starbucks)
 # add size and milk choice to the item name 
 starbucks$...1=NULL
-check_bb(starbucks)
 starbucks[,item_name:=paste(item_name,size,milk, sep= ', ')]
 starbucks$item_name = gsub(starbucks$item_name,pattern=' NA,',replacement='')
 starbucks$item_name = gsub(starbucks$item_name,pattern=' NA',replacement='')
 starbucks$size=NULL
 starbucks$milk = NULL
-starbucks$servingsize = starbucks$servingSize
-starbucks$servingSize = NULL
+check_bb(starbucks)
+starbucks$servingsize = as.character(starbucks$servingsize)
 data_all = bind_rows(data_all,starbucks)
 
 # 8. Pizzahut
@@ -191,25 +190,20 @@ subway$servingsize = as.character(subway$servingsize)
 data_all<-bind_rows(data_all,subway)
 
 # 10. Nandos 
-nandos_file = list.files(list.files(pattern='nandos',full.names=TRUE,ignore.case = TRUE),pattern='.csv',full.names = TRUE)
-nandos = read_csv(nandos_file)
-nandos$collection_date = str_split(list.files(pattern='nandos',ignore.case=TRUE),pattern='_')[[1]][3]
-nandos$rest_name = 'Nandos'
+nandos = pdf_convert('Nandos','Nandos')
+# table(nandos$`Product Category`)
 
 nandos_select = nandos %>% select ('collection_date','rest_name','Product Category','Product Name','Product Description',
                                    'Product Price', 'Energy (kcal) per serving','Energy (kj) per serving',
                                    'Fat per serving','Saturated fat per serving','Carbohydrates per serving',
                                    "Sugar per serving","Fibre per serving","Protein per serving",
                                    "Salt per serving")
-nandos_select2 = nandos_select %>% mutate_at(vars('Energy (kcal) per serving','Energy (kj) per serving',
-                            'Fat per serving','Saturated fat per serving','Carbohydrates per serving',
-                            "Sugar per serving","Fibre per serving","Protein per serving",
-                            "Salt per serving"), function(x) as.numeric(str_extract(pattern='[0-9]+[.]?[0-9]?',x)))
 names<-c('collection_date','rest_name','menu_section','item_name','item_description','price','kcal','kj','fat',
          'satfat','carb','sugar','fibre','protein','salt')
-colnames(nandos_select2) =names
-check_bb(nandos_select2) 
-data_all = bind_rows(data_all,nandos_select2)
+colnames(nandos_select) =names
+nandos_select = clean_columns(nandos_select)
+check_bb(nandos_select) 
+data_all = bind_rows(data_all,nandos_select)
 
 # 11. Puzza Express 
 pizzaexp = pdf_convert('PizzaExpress','PizzaExpress')
@@ -218,20 +212,18 @@ check_bb(pizzaexp)
 data_all<-bind_rows(data_all,pizzaexp)
 
 #12. Burgerking 
-burgerking_file = list.files(list.files(pattern='burgerking',full.names=TRUE,ignore.case=TRUE),pattern='.csv',full.names = TRUE)
-burgerking = read_csv(burgerking_file)
+burgerking= read_data('BurgerKing')
 check_bb(burgerking)
 data_all = bind_rows(data_all,burgerking)
 
 # 13. Pret a Manger
-pret_file = list.files(list.files(pattern='pret',full.names=TRUE,ignore.case=TRUE),pattern='.csv',full.names = TRUE)
-pret = data.table(read_csv(pret_file))
-colnames(pret)[14:31] = c('kj_100','kj',
+pret= data.table(read_data('Pret'))
+colnames(pret)[14:33] = c('kj_100','kj',
                           'kcal_100','kcal','fat_100','fat','satfat_100','satfat',
                           'carb_100','carb',
                           'sugar_100','sugar','fibre_100','fibre',
                           'protein_100','protein',
-                          'salt_100','salt')
+                          'salt_100','salt', 'sodium_100','sodium')
 
 pret$servingsize = as.character(pret$kcal/pret$kcal_100*100)
 pret[!is.na(servingsize),servingsizeunit:='g']
@@ -241,16 +233,17 @@ data_all$menu_id = as.character(data_all$menu_id)
 data_all = bind_rows(data_all,pret)
 
 # 14. Caffe Nero 
-nero_file = list.files(list.files(pattern='nero',full.names=TRUE,ignore.case=TRUE),pattern='.csv',full.names = TRUE)
-nero = read_csv(nero_file)
+nero= read_data('Nero')
 nero
-colnames(nero) = c('delete','collection_date','rest_name',"item_name", "item_description", "vegeterian",
+colnames(nero) = c('delete','collection_date','rest_name',"item_name", "item_description", "vegetarian",
                    "menu_section", "kj_100", "kj" , "kj_uom", "kcal_100", "kcal", "kcal_uom",
                    "fat_100", "fat", "fat_uom", "carb_100", "carb", "carb_uom", "protein_100", 
                    "protein", "protein_uom", "satfat_100", "satfat", "satfat_uom", 
                    "sugar_100",  "sugar", "sugar_uom",  "fibre_100", "fibre", "fibre_uom",
                    "salt_100","salt", "salt_uom", 
-                   "sodium_100", "sodium", "sodium_uom")
+                   "sodium_100", "sodium", "sodium_uom", 
+                   'energy_fat_100',  'energy_fat','energy_fat_uom',
+                   'transfat_100','transfat','transfat_uom', 'cholesterol_100','cholesterol','cholesterol_uom')
 table(nero$menu_section)
 nero$servingsize = as.character(nero$kcal/nero$kcal_100*100)
 nero = data.table(nero)
@@ -262,6 +255,7 @@ nero[!is.na(servingsize),servingsizeunit:='g']
 nero[,delete:=NULL]
 nero[,grep(colnames(nero),pattern='_uom'):=NULL]
 check_bb(nero)
+data_all$vegetarian = as.character(data_all$vegetarian)
 data_all = bind_rows(data_all,nero)
 dim(data_all)
 
@@ -303,8 +297,7 @@ check_bb(sizzling2)
 data_all = bind_rows(data_all,sizzling2)
 
 #19. Ember Inns
-ember_file = list.files(list.files(pattern='ember',full.names=TRUE,ignore.case=TRUE),pattern='.csv',full.names = TRUE)
-ember = read_csv(ember_file)
+ember= read_data('Ember')
 ember2 = ember %>% mutate_at(vars('kcal','kj','fat',
                                         'satfat','carb','sugar','protein','salt'), function(x) as.numeric(str_extract(pattern='[0-9]+([.][0-9]+)?',gsub(pattern=',',replacement='',x))))
 
@@ -315,6 +308,7 @@ dim(data_all)
 
 # 20. Chef and Brewer 
 chef = read_data('Chef')
+chef
 check_bb(chef)
 data_all<-bind_rows(data_all,chef)
 
@@ -338,7 +332,7 @@ revolution = clean_columns(revolution)
 # delete the inaccurate rows
 #revolution3 = revolution[(!is.na(revolution$item_name))& revolution$kcal!=0 & !is.na(revolution$kcal),]
 check_bb(revolution)
-revolution$salt = revolution$sodium*2.54
+# revolution$salt = revolution$sodium*2.54
 data_all = bind_rows(data_all,revolution)
 dim(data_all)
 
@@ -348,9 +342,9 @@ colnames(zizzi)<-c('collection_date','rest_name',
                    'menu_reference','menu_section','item_name',
                    'menu_id','kcal','item_description','price','dietary')
 check_bb(zizzi)
-zizzi$menu_id = as.character(zizzi$item_id)
-zizzi$price = as.character(zizzi$price)
 zizzi = clean_columns(zizzi)
+zizzi$menu_id = as.character(zizzi$menu_id)
+zizzi$price = as.character(zizzi$price)
 data_all<-bind_rows(data_all,zizzi)
 
 # 25. ask 
@@ -384,7 +378,6 @@ check_bb(papa2)
 data_all<-bind_rows(data_all,papa2)
 
 #27. Yates 
-yates_file = list.files(list.files(pattern='yates',full.names=TRUE,ignore.case=TRUE),pattern='.csv',full.names = TRUE)
 yates = read_data('Yates')
 head(yates)
 check_bb(yates)
@@ -1063,8 +1056,8 @@ data_all = bind_rows(data_all,amt)
 # data_all = bind_rows(data_all, rouge)
 
 
-data_all = fread('MenuTracker_Jun2022_060622.csv')
-fwrite(data_all,'MenuTracker_Jun2022_080822.csv')
+data_all = fread('MenuTracker_Sep2022_250822.csv')
+fwrite(data_all,'MenuTracker_Sep2022_250822.csv')
 
 
 

@@ -6,9 +6,15 @@ import scrapy
 class A25AskSpider(scrapy.Spider):
     name = '25_Ask'
     allowed_domains = ['www.askitalian.co.uk']
-    start_urls = ['https://www.askitalian.co.uk/wp-json/menus/get_menus_from_ids?ids=4182,4448,4632,4594']
+    start_urls = ['https://www.askitalian.co.uk/menus/full-menu/']
+    # start_urls = ['https://www.askitalian.co.uk/wp-json/menus/get_menus_from_ids?ids=4182,4448,4632,4594']
 
     def parse(self, response):
+        menu_ids = response.xpath('//div[@class="js-menus  c-menus"]/@data-menus').get().replace('[','').replace(']','')
+        query_url = f'https://www.askitalian.co.uk/wp-json/menus/get_menus_from_ids?ids={menu_ids}'
+        yield scrapy.Request(url = query_url, callback = self.parse_cat)
+
+    def parse_cat(self, response):
         menu_names = response.json().get('data')
         for menu_name in menu_names:
             name = menu_name.get('name')
