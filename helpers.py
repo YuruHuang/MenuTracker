@@ -101,6 +101,7 @@ def combo_PDFDownload(rest_name, url, keyword='pdf', prex=None, verify=True):
                 filename = filename.split('?')[0]
             else: 
                 filename = filename + '.pdf'
+        filename = filename.replace(':', '')
         filePath = os.path.join(path,  filename) # path to save the PDF file
         print(url_link)
         print(filePath)
@@ -180,8 +181,8 @@ def RunSpider(spidername, folder, json_=False):
             os.system("scrapy crawl " + spidername + " -o ..\\" + json_file_path)
             with open('..\\' + json_file_path,'r') as jsonfile:
                 json_data = json.load(jsonfile)
-            json_df = pd.DataFrame(json_data)
-            json_df.to_csv(json_file_path.replace('.json', '.csv'), index=False)
+                json_df = pd.DataFrame(json_data)
+                json_df.to_csv('..\\' + json_file_path.replace('.json', '.csv'), index=False)
         else:
             csv_file_name = spidername + '_items.csv'
             csv_file_path = os.path.join(path, csv_file_name)
@@ -193,8 +194,8 @@ def RunSpider(spidername, folder, json_=False):
             os.system("scrapy crawl " + spidername + " -o" + json_file_path_root)
             with open(json_file_path_root,'r') as jsonfile:
                 json_data = json.load(jsonfile)
-            json_df = pd.DataFrame(json_data)
-            json_df.to_csv(json_file_path_root.replace('.json', '.csv'), index=False)
+                json_df = pd.DataFrame(json_data)
+                json_df.to_csv(json_file_path_root.replace('.json', '.csv'), index=False)
         else:
             csv_file_name = spidername + '_items.csv'
             csv_file_path_root = os.path.join(root_path, path, csv_file_name)
@@ -213,13 +214,20 @@ def RunScript(rest_name):
 # Downloading PDF for Greene King companies
 def greene_king_download(rest_name, id, url, folder):
     path = create_folder(rest_name, folder)
-    menus = requests.get(f'https://menu.greeneking-pubs.co.uk/{id}').json().get('data').get('menus')
+    # graphsql 
+    request_url ='https://menufinder.greeneking-pubs.co.uk/graphql'
+    query_string = "query Menus($venueId: String!) {\n  menus(venueId: $venueId) {\n    id\n    name\n    slug\n    description\n    image\n  }\n}\n"
+    payload = {"operationName":"Menus","variables":{"venueId":id},"query":query_string}
+    menus = requests.post(request_url, headers = headers, json = payload).json().get('data').get('menus')
     for menu in menus:
-        menu_name = urllib.parse.quote(menu.get('name'))
-        get_menu_url = f'{url}/umbraco/api/menu/getmenus?id={id}&name={menu_name}'
-        url_pdfs = requests.get(get_menu_url).json().get('data').values()
-        for url_pdf in url_pdfs:
-            if url_pdf is not None:
-                url_pdf = url + url_pdf
+        menu_name = menu.get('name')
+        print(menu_name + 'Downloading ---->')
+        menu_id = menu.get('id')
+        # now another post request to get the download link 
+        query_string_menu = {"operationName":"MenuPages","variables":{"venueId":id,"menuId":menu_id},"query":"query MenuPages($venueId: String!, $menuId: Int!) {\n  menuPages(venueId: $venueId, menuId: $menuId) {\n    id\n    name\n    downloads {\n      download\n      allergens\n      nutrition\n    }\n    keywords {\n      id\n      name\n      icon\n    }\n    displayGroups {\n      id\n      name\n      groupHeader\n      groupFooter\n      products {\n        id\n        name\n        description\n        new\n        showPrices\n        keywords\n        portions {\n          id\n          name\n          portionName\n          abbreviation\n          price\n        }\n      }\n    }\n  }\n}\n"}
+        menu_urls = requests.post(request_url, headers= headers, json = query_string_menu).json().get('data').get('menuPages').get('downloads')
+        for value in menu_urls.values():
+            if value is not None:
+                url_pdf = url + value
                 path_temp = os.path.join(path, url_pdf.split('/')[-1]) # path to save the PDF file
                 PDFDownloader(url_pdf, path_temp)

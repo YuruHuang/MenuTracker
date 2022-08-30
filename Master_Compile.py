@@ -103,7 +103,7 @@ combo_PDFDownload('26_PapaJohns', url='https://www.papajohns.co.uk/', prex='http
 RunSpider('27_Yates', folder)
 
 # 28. Yo!Sushi -> lack carb and fibre information on websites -> PDF
-combo_PDFDownload('28_Yosushi', url='https://yosushi.com/content/Allergen-and-Nutrition',
+combo_PDFDownload('28_Yosushi', url='https://yosushi.com/legal/allergen-information',
                   prex='https://yosushi.com')
 
 # 29. All Bar One
@@ -170,13 +170,13 @@ combo_PDFDownload('47_Coffee1', 'https://www.coffee1.co.uk/food-nutritional-info
 RunSpider('48_CommonRooms', folder)
 
 # 49. Cookhouse & Pub
-combo_PDFDownload('49_CookhousePub', url='https://www.cookhouseandpub.co.uk/en-gb/allergy-nutrition?intcmp=footer',
+combo_PDFDownload('49_CookhousePub', url='https://www.cookhouseandpub.co.uk/en-gb/
                   prex='https://www.cookhouseandpub.co.uk', verify=False)
 
-50.Crussh -> terrible website!
+# 50.Crussh -> terrible website!
 RunSpider('50_Crussh', json_=True, folder=folder)
 
-51. Farmhouse Inns -> PDF
+# 51. Farmhouse Inns -> PDF
 greene_king_download(rest_name='51_FarmhouseInns', id='5690', url='https://www.farmhouseinns.co.uk', folder=folder)
 
 # 52. Five guys -> PDF

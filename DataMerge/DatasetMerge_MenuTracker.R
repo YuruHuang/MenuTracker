@@ -393,7 +393,7 @@ data_all<-bind_rows(data_all,yosushi)
 dim(data_all)
 
 #29. All Bar One: no nutritional information???? recaptured on March 26
-allbarone_file = list.files(list.files(pattern='allbarone',full.names=TRUE,ignore.case=TRUE),pattern='.csv',full.names = TRUE)
+#allbarone_file = list.files(list.files(pattern='allbarone',full.names=TRUE,ignore.case=TRUE),pattern='.csv',full.names = TRUE)
 allbarone = read_data('AllBarOne')
 # View(allbarone)
 #allbarone$Christmas = ifelse(grepl(allbarone$menu_section,pattern='festive|christmas',ignore.case = TRUE),1,0)
@@ -447,14 +447,14 @@ nutrient_list =  c('kj','kcal','fat',
 paul2 = paul %>% mutate_if(names(.) %in% nutrient_list, function(x){as.numeric(gsub(',','.',x))})
 paul2 = data.table(paul2)
 paul2[!is.na(servingsize),servingsizeunit:='g']
-View(paul2)
+# View(paul2)
 check_bb(paul2)
 paul2$servingsize = as.character(paul2$servingsize)
 data_all<-bind_rows(data_all,paul2)
 dim(data_all)
 
 # 34. Wimpy
-wimpy_file = list.files(list.files(pattern='wimpy',full.names=TRUE,ignore.case=TRUE),pattern='.csv',full.names = TRUE)
+# wimpy_file = list.files(list.files(pattern='wimpy',full.names=TRUE,ignore.case=TRUE),pattern='.csv',full.names = TRUE)
 wimpy = read_data('Wimpy')
 colnames(wimpy)[5]<-'menu_id'
 wimpy$menu_id<-as.character(wimpy$menu_id)
@@ -477,7 +477,6 @@ check_bb(bills)
 data_all<-bind_rows(data_all,bills)
 
 #37 Walkabout
-walkabout_file = list.files(list.files(pattern='walkabout',full.names=TRUE,ignore.case=TRUE),pattern='.csv',full.names = TRUE)
 walkabout = read_data('Walkabout')
 check_bb(walkabout)
 data_all<-bind_rows(data_all,walkabout)
@@ -586,7 +585,7 @@ check_bb(cookhouse)
 data_all = bind_rows(data_all,cookhouse)
 
 # 50. Crussh
-crussh = data.table(read_data('Crussh'))
+crussh = read_data('Crussh')
 crussh_cols = colnames(crussh)
 clean_cols = gsub('per portion', 'per serving',gsub("[()]", "", gsub('\\*','',tolower(crussh_cols)))) #lower, replace *,remove (), and per portion = perserving
 clean_cols = str_replace_all(pattern='\\s',replacement='',clean_cols)
@@ -599,7 +598,7 @@ clean_cols = gsub('g_','_',clean_cols)
 clean_cols = gsub('_100ml','_100g',clean_cols)
 sum(duplicated(clean_cols))
 colnames(crussh) = clean_cols
-crussh[,...1:=NULL]
+# crussh[,...1:=NULL]
 
 # coalesce columns with the same names
 crussh_df = data.frame(crussh)
@@ -640,16 +639,22 @@ crussh_new = bind_rows(crussh_new,newrows)
 # update item names - add size
 crussh_new = data.table(crussh_new)
 crussh_new[!is.na(size),item_name:=paste(item_name,size,sep=', ')]
-# delete items without kcal_serving
-crussh_new = crussh_new[!is.na(energykcal_perserving)]
+# delete items without kcal_serving -> perhaps not necessary 
+# crussh_new = crussh_new[!is.na(energykcal_perserving)]
 # delete extra columns
-crussh_new = crussh_new[,2:22]
-colnames(crussh_new) = c('rest_name','collection_date','menu_section','item_name',
-                         'item_description','price','allergens','kcal_100','kcal','fat_100',
-                         'fat','satfat_100','satfat','carb_100','carb','sugar_100','sugar',
-                         'protein_100','protein','salt_100','salt')
-check_bb(crussh_new)
-data_all = bind_rows(data_all,crussh_new)
+# crussh_new = crussh_new[,2:22]
+# delete columns with sizes
+crussh_new = data.frame(crussh_new)
+crussh_new2 = crussh_new[,!grepl('2oz|1oz|med|lrg|sml', colnames(crussh_new))]
+crussh_new2$id = NULL
+# mapping the names again 
+colnames(crussh_new2) = gsub(colnames(crussh_new2), pattern='_perserving|energy',replacement = '')
+colnames(crussh_new2) = gsub(colnames(crussh_new2), pattern='100g', replacement ='100')
+colnames(crussh_new2) = gsub(colnames(crussh_new2),pattern = 'saturates', replacement = 'satfat')
+colnames(crussh_new2) = gsub(colnames(crussh_new2),pattern = 'carbohydrate', replacement = 'carb')
+
+check_bb(crussh_new2)
+data_all = bind_rows(data_all,crussh_new2)
 
 # 51. Farmhouse 
 farmhouse = pdf_combine('Farmhouse','Farmhouse Inns')
@@ -708,7 +713,7 @@ check_bb(leon)
 leon$servingsizeunit = 'g'
 leon$servingsize = as.character(leon$servingsize)
 data_all = bind_rows(data_all,leon)
-
+ 
 # 57. greene King
 greeneking = pdf_convert('GreeneKing','Greene King')
 check_bb(greeneking)
