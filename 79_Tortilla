@@ -1,0 +1,53 @@
+import json
+import os
+import pandas as pd
+import requests
+from bs4 import BeautifulSoup
+
+from define_collection_wave import folder
+from helpers import create_folder, cleanhtml
+
+path_tortilla = create_folder('79_Tortilla', folder)
+
+tortilla_url = 'https://www.tortilla.co.uk/menu/nutrition-and-allergens'
+r = requests.get(tortilla_url)
+soup = BeautifulSoup(r.text, 'html.parser')
+
+script_data = soup.find(id = "__NEXT_DATA__").get_text()
+# load all these data in JSON
+with open(path_tortilla + '/tortilla_items.json', 'w') as f:
+        json.dump(json.loads(script_data), f)
+ingredients = json.loads(script_data).get('props').get('pageProps').get('ingredients')
+products = json.loads(script_data).get('props').get('pageProps').get('products')
+ingredients_df = []
+for ingredient in ingredients: 
+    ingredient_temp = ingredient.get('content')
+    ingredient_temp.update({'subitem_name': ingredient.get('name')})
+    ingredient_temp.update({'ingredient_uid': ingredient.get('uuid')})
+    ingredients_df.append(ingredient_temp)
+ingredients_df = pd.DataFrame(ingredients_df)
+products_df = pd.DataFrame()
+for product in products: 
+    # for each product 
+    item_name = product.get('content').get('title')
+    menu_id = product.get('content').get('_uid')
+    product_ing = product.get('content').get('product_sizes')
+    # each product has different sizes
+    for ing in product_ing: 
+        size = ing.get('size_name')
+        # for each product, you can choose different categories of ingredients 
+        ings = ing.get('ingredient_categories') # different categories of ingredients, for example, base, protein, toppings etc
+        for ing_list in ings: 
+            ingredient_category = ing_list.get('ingredients_category') # category
+            ingredients_full = pd.DataFrame(ing_list.get('ingredients'))
+            ingredients_full['ingredient_category'] = ingredient_category
+            ingredients_full['size'] = size
+            ingredients_full['menu_id'] = menu_id
+            ingredients_full['item_name'] = item_name
+            products_df = pd.concat([products_df, ingredients_full], axis=0)
+        # merge the product_df and ingredients df 
+
+product_df_all = products_df.merge(ingredients_df, how= 'left', left_on ='ingredient', right_on ='ingredient_uid')
+
+
+product_df_all.to_csv(os.path.join(path_tortilla, 'tortilla_items.csv'))

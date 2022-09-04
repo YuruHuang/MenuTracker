@@ -31,13 +31,20 @@ class A80TossedSpider(scrapy.Spider):
             self.driver.get(category_urls[i])
             cat_name = category_names[i]
             sleep(3)
-            items = self.driver.find_elements(by=By.XPATH, value='//div[@data-test-type="meal2.0"]')
+            items = self.driver.find_elements(by=By.XPATH, value='//div[@class="css-l3v0e0 e1olru1g11"]')
             for i in range(len(items)):
+                item = self.driver.find_elements(by=By.XPATH, value='//div[@class="css-l3v0e0 e1olru1g11"]')[i]
+                item_type = item.get_attribute('data-test-type')
+                self.driver.execute_script("arguments[0].click();", item)
+                try:
+                    element = self.driver.find_element(by = By.XPATH, value = '//button[@data-test="decrease-quantity-btn"]')
+                    self.driver.execute_script("arguments[0].click();",element)
+                except:
+                    pass
                 sleep(2)
-                self.driver.execute_script("arguments[0].click();", self.driver.find_elements(by=By.XPATH,
-                                                                                              value='//div[@data-test-type="meal2.0"]')[
-                    i])
-                sleep(3)
+                if item_type == 'upsell-to-meal-deal':
+                    self.driver.execute_script("arguments[0].click();", self.driver.find_element(by = By.XPATH, value='//button[@class="e1msu4pj7 css-1wjv3ev e2l7ybf9"]'))
+                    sleep(2)
                 try:
                     self.driver.find_element(by=By.XPATH, value='//li[@data-test="tab-Nutrition"]').click()
                     sleep(2)
@@ -45,7 +52,7 @@ class A80TossedSpider(scrapy.Spider):
                     nutrition = soup.xpath('//div[@data-test="tab-panel-nutrition"]//li')
                     nutrition_dict = {nutrient.xpath('./span[1]/text()').get():
                                           nutrient.xpath('./span[2]/text()').get() for nutrient in nutrition}
-                    item_name = soup.xpath('//h1[@class="css-94q40e e88axzs0"]/text()').get()
+                    item_name = soup.xpath('//h1[contains(@class, "e88axzs0")]/text()').get()
                     item_description = soup.xpath('//div[@class="css-izbaa7 e1qplo9o0"]/p/text()').get()
                     # if item_name is None:
                     #     item_name = soup.xpath('//div[@class="css-1b960qj eii5z642"]//h1/text()').get()

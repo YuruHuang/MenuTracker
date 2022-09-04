@@ -180,7 +180,7 @@ RunSpider('50_Crussh', json_=True, folder=folder)
 greene_king_download(rest_name='51_FarmhouseInns', id='5690', url='https://www.farmhouseinns.co.uk', folder=folder)
 
 # 52. Five guys -> PDF
-combo_PDFDownload(rest_name='52_FiveGuys', url='https://www.fiveguys.co.uk/nutrition')
+combo_PDFDownload(rest_name='52_FiveGuys', url='https://www.fiveguys.co.uk/menu', keyword = 'nutrition')
 
 # 53. Harvester
 RunSpider('53_Harvester', folder)
@@ -207,7 +207,8 @@ java_PDF('59_Odeon', url='https://www.odeon.co.uk/experiences/food-drinks/food-a
          link_=False, xpath_="//p/a[contains(@title, 'Nutritional')]")
 
 # 60. Marston's Pubs
-combo_PDFDownload('60_Marstons', url='https://www.dragonflypubbasingstoke.co.uk/menus/')
+# combo_PDFDownload('60_Marstons', url='https://www.dragonflypubbasingstoke.co.uk/menus/')
+RunSpider('60_Marstons', folder)
 
 # 61. Morrisons Cafe
 RunScript('61_MorrisonsCafe')
@@ -227,7 +228,7 @@ combo_PDFDownload('65_SainsburysCafe',
                   prex='https://www.sainsburys.co.uk')
 
 # 66. Soho Cafe
-RunSpider('66_SohoCafe', folder)
+RunSpider('66_SohoCafe', folder, json_=True)
 
 # 67. Stonehouse Pizza
 RunSpider('67_StonehousePizza', folder)
@@ -260,7 +261,8 @@ RunSpider('74_TownKitchenPubs', folder)
 RunSpider('75_VintageInns', folder)
 
 # 76. Wasabi
-RunScript('76_Wasabi')
+# RunScript('76_Wasabi')
+java_PDF('76_Wasabi', url = 'https://www.wasabi.uk.com/our-food/', link_=False, xpath_ = '//a[contains(@href, "nutrition")]')
 
 # 77. Waterfields
 RunSpider('77_Waterfields', folder, json_=True)

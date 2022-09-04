@@ -102,6 +102,7 @@ def combo_PDFDownload(rest_name, url, keyword='pdf', prex=None, verify=True):
             else: 
                 filename = filename + '.pdf'
         filename = filename.replace(':', '')
+        filename = filename.replace('?','')
         filePath = os.path.join(path,  filename) # path to save the PDF file
         print(url_link)
         print(filePath)
@@ -115,15 +116,17 @@ def java_PDF(rest_name, url, prex=None, link_=True, xpath_=None):
     s = Service(web_browser_path)
     browser = webdriver.Chrome(service=s)
     browser.get(url)
+    sleep(3)
     # links that contain PDF
     if link_:
         links = [link.get_attribute('href') for link in
                  browser.find_elements(by=By.PARTIAL_LINK_TEXT, value='Download')]
     else:
         links = [link.get_attribute('href') for link in
-                 browser.find_elements(by=By.XPATH, value=xpath_)]
+                    browser.find_elements(by=By.XPATH, value=xpath_)]
     for url_link in links:
         browser.get(url_link)
+        url_link = browser.current_url
         sleep(5)
         if 'https://' not in url_link and 'http://' not in url_link:
             if url_link[0] != '/':

@@ -6,13 +6,13 @@ import scrapy
 class A73TopgolfSpider(scrapy.Spider):
     name = '73_TopGolf'
     allowed_domains = ['topgolf.com', 'topgolf.kitchencut.com']
-    start_urls = ['https://topgolf.com/uk/food-and-drink/allergens/']
+    start_urls = ['https://topgolf.kitchencut.com/embed/digital-menu/30000010000074']
+
+    # def parse(self, response):
+    #     url_menu = response.xpath('//section[@class="no-top-border"]//iframe/@src').get()
+    #     yield scrapy.Request(url=url_menu, callback=self.parse_item)
 
     def parse(self, response):
-        url_menu = response.xpath('//section[@class="no-top-border"]//iframe/@src').get()
-        yield scrapy.Request(url=url_menu, callback=self.parse_item)
-
-    def parse_item(self, response):
         categories = response.xpath('//div[@class="table-responsive"]')
         for category in categories:
             cat_name = category.xpath('.//h4/text()').get()

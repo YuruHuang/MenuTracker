@@ -691,12 +691,11 @@ data_all = bind_rows(data_all,hungry)
 
 # 55. Joe & the Juice 
 joejuice = read_data('Joe')
-colnames(joejuice)<- c('X1','collection_date','rest_name',
+colnames(joejuice)<- c('collection_date','rest_name',
                        'menu_section','item_name','item_description',
                        'price','allergens','kj','protein','kcal','carb',
                        'fibre','sugar','fat','satfat',
                        'sodium')
-joejuice$X1 = NULL
 joejuice = clean_columns(joejuice)
 joejuice$salt = joejuice$sodium*2.54/1000
 check_bb(joejuice)
@@ -742,13 +741,11 @@ odeon$servingsize = as.character(odeon$servingsize)
 data_all = bind_rows(data_all, odeon)
 
 # 60. Martons 
-martons = yosushi_cleaner('Marstons',"Marston\'s")
-colnames(martons) = c('item_name','kcal','kcal_percent','kj','kj_percent','fat','fat_percent','satfat',
-                      'satfat_percent','carb','carb_percent','sugar','sugar_percent','protein','protein_percent',
-                      'fibre','fibre_percent','salt','salt_percent','rest_name','collection_date')
-martons = clean_columns(martons)
-check_bb(martons)
-data_all = bind_rows(data_all,martons)
+marstons = read_data('Marstons')
+colnames(marstons) = c('collection_date','rest_name','menu_section','item_name',
+                       'item_description','kcal','protein','carb','sugar','fat','satfat','salt')
+check_bb(marstons)
+data_all = bind_rows(data_all,marstons)
 
 # 61. Morrisons 
 morrisons = read_data('Morrisons')
@@ -803,20 +800,42 @@ data_all = bind_rows(data_all, sainsburys)
 
 # 66. Soho
 soho = read_data('Soho')
-soho2 = soho %>% separate(`Energy per 100g`, into=c('kj_100','kcal_100'),sep='/')  
-soho2 = soho2 %>% separate(`Energy per serving`, into=c('kj','kcal'),sep='/')  
-colnames(soho2)<-c('collection_date','rest_name','menu_section','item_name',
-                   'item_description','allergens','kj_100','kcal_100',
-                   'kj','kcal','fat_100','fat','satfat_100',
-                   'satfat','carb_100','carb','sugar_100','sugar','fibre_100',
-                   'fibre','protein_100','protein','salt_100','salt')
-soho2 =soho2 %>% mutate_at(vars('kj_100','kcal_100',
-                                'kj','kcal','fat_100','fat','satfat_100',
-                                'satfat','carb_100','carb','sugar_100','sugar','fibre_100',
-                                'fibre','protein_100','protein','salt_100','salt'),function(x) as.numeric(str_extract(pattern='[0-9]+([.][0-9]+)?',x)))
-View(soho2)
-check_bb(soho2)
-data_all = bind_rows(data_all,soho2)
+soho[,grepl(names(soho),pattern = 'Per 100g')] = NULL # these columns are empty 
+
+# fix the issue with soya milk tall _100g 
+# soho$`Soya milk – Tall_100g` = NULL
+# names(soho) = gsub(pattern='Soya milk – Tall_perserving', replacement ='Soya milk – Tall', names(soho))
+
+# fix the issue with ...41 column names 
+# names(soho) = gsub(pattern='\\...[0-9]+', replacement ='', names(soho))
+
+# for items with milk choices, reshape 
+soho_basic = soho[,!grepl(names(soho),pattern = 'milk')]
+soho_milk = soho[,grepl(names(soho),pattern = 'milk')]
+soho_milk = cbind(soho[,1:5],soho_milk)
+# reshape the data 
+soho_milk2 = soho_milk %>% gather('milk','kcal',6:length(colnames(soho_milk)))
+soho_milk2 = soho_milk2[!is.na(soho_milk2$kcal),]
+# make edits
+soho_milk2$milk = gsub(pattern='\\...[0-9]+', replacement ='', soho_milk2$milk)
+soho_milk2$milk = gsub(pattern='Soya milk – Tall_perserving', replacement ='Soya milk – Tall',soho_milk2$milk)
+soho_milk2$item_name = paste(soho_milk2$item_name, soho_milk2$milk, sep=', ')
+soho_milk2$milk = NULL
+
+
+soho_basic = soho_basic %>% separate(`Energy per 100g`, into=c('kj_100','kcal_100'),sep='/', fill = 'left')  
+soho_basic = soho_basic %>% separate(`Energy per serving`, into=c('kj','kcal'),sep='/', fill = 'left')  
+colnames(soho_basic)<-c('collection_date','rest_name','menu_section','item_name',
+                   'item_description','kj','kcal','fat_100','fat','satfat_100', 'satfat','carb_100',
+                   'carb','sugar_100','sugar', 'fibre_100','fibre','protein_100','protein',
+                   'salt_100','salt','kj_100','kcal_100')
+soho_basic = clean_columns(soho_basic)
+soho_milk2 = clean_columns(soho_milk2)
+soho_combined = bind_rows(soho_basic, soho_milk2)
+check_bb(soho_combined)
+
+
+data_all = bind_rows(data_all,soho_combined)
 
 # 67.stonehouse
 stonehouse = read_data('Stonehouse')
@@ -879,22 +898,22 @@ tim = data.table(read_data('Tim'))
 # fix some errors
 tim[grepl(Energy_percent,pattern='kJ'),Energy_perserving:=Energy_percent]
 tim[grepl(Energy_percent,pattern='kJ'),Energy_percent:=NA]
-tim = tim %>% separate(`Energy_perserving`, into=c('kj','kcal'),sep='/')  
+tim = tim %>% separate(`Energy_perserving`, into=c('kj','kcal'),sep='/', fill = "left")  
 # if rows only have kcal 
-tim[grepl(kj,pattern='kcal'), kcal:=kj]
-tim[grepl(kj,pattern='kcal'), kj:=NA]
+#tim[grepl(kj,pattern='kcal'), kcal:=kj]
+# tim[grepl(kj,pattern='kcal'), kj:=NA]
 tim$servingsizeunit = str_extract(tim$servingsize,'oz|g')
 tim$servingsize = as.numeric(str_extract(tim$servingsize,'[0-9]+(\\.[0-9]+)?'))
 
 colnames(tim) = c( "collection_date", "rest_name","menu_section" , "menu_id",                      
                    "item_name", "servingsize", "allergens" ,'kj','kcal','kcal_percent',
-                   'fat','fat_percent','satfat_percent','carb','carb_percent','sugar',
-                   'sugar_percent','fibre','protein','protein_percent','salt','servingsizeunit')
+                   'fat','fat_percent', 'satfat', 'satfat_percent','carb','carb_percent','sugar',
+                   'sugar_percent','fibre', 'protein','protein_percent','salt','salt_percent', 'servingsizeunit')
 tim = clean_columns(tim)
 data_all$menu_id = as.character(data_all$menu_id)
 tim$servingsize = as.character(tim$servingsize)
 check_bb(tim)
-tim$satfat = 20* as.numeric(gsub('%',"",tim$satfat_percent))/100
+# tim$satfat = 20* as.numeric(gsub('%',"",tim$satfat_percent))/100
 data_all = bind_rows(data_all,tim)
 
 # 73. top golf 
@@ -924,20 +943,20 @@ wasabi$...1=NULL
 data_all = bind_rows(data_all,wasabi)
 
 # 77. waterfields
-waterfields = read_data('Waterfields')
-waterfields$...1 = NULL
-waterfields_d = dup_cols(waterfields)
-colnames(waterfields_d) = c("collection_date","rest_name","menu_section",
-                            "item_name","item_description",
-                            "kj","kj_100","kcal","kcal_100",'fat','fat_100',
-                            'satfat','satfat_100','monofat','monofat_100',
-                            'polyfat','polyfat_100','carb','carb_100',
-                            'sugar','sugar_100','starch','starch_100',
-                            'fibre','fibre_100','protein','protein_100',
-                            'salt','salt_100','sodium','sodium_100'
-)
-check_bb(waterfields_d)
-data_all = bind_rows(data_all,waterfields_d)
+# waterfields = read_data('Waterfields')
+# waterfields$...1 = NULL
+# waterfields_d = dup_cols(waterfields)
+# colnames(waterfields_d) = c("collection_date","rest_name","menu_section",
+#                             "item_name","item_description",
+#                             "kj","kj_100","kcal","kcal_100",'fat','fat_100',
+#                             'satfat','satfat_100','monofat','monofat_100',
+#                             'polyfat','polyfat_100','carb','carb_100',
+#                             'sugar','sugar_100','starch','starch_100',
+#                             'fibre','fibre_100','protein','protein_100',
+#                             'salt','salt_100','sodium','sodium_100'
+# )
+# check_bb(waterfields_d)
+# data_all = bind_rows(data_all,waterfields_d)
 
 
 # 78. Birds Bakery
@@ -995,14 +1014,6 @@ data_all = bind_rows(data_all, rouge)
 
 # 83. Taco
 taco_bell = read_data('Taco')
-colnames(taco_bell) = c('collection_date','rest_name','menu_id','menu_section','item_name',
-                        'allergens','ingredients','servingsize',
-                        'kcal','kcal_100',
-                        'fat','fat_100','satfat','satfat_100',
-                        'sodium','sodium_100','carb','carb_100',
-                        'sugar','sugar_100',
-                        'protein','protein_100')
-
 colnames(taco_bell) = c('collection_date','rest_name','menu_id','menu_section',
                         'item_name','allergens','ingredients','servingsize','kcal','kcal_100','fat_calorie','fat_calorie_100',
                         'fat','fat_100','satfat','satfat_100','transfat','transfat_100','polyfat','polyfat_100',
@@ -1061,8 +1072,8 @@ data_all = bind_rows(data_all,amt)
 # data_all = bind_rows(data_all, rouge)
 
 
-data_all = fread('MenuTracker_Sep2022_250822.csv')
-fwrite(data_all,'MenuTracker_Sep2022_250822.csv')
+data_all = fread('MenuTracker_Sep2022_020922.csv')
+fwrite(data_all,'MenuTracker_Sep2022_020922.csv')
 
 
 
