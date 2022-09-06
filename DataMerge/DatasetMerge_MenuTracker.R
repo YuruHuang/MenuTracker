@@ -11,7 +11,7 @@ library(openxlsx)
 
 rm(list = ls())
 
-wd = 'C://Users//yh459//OneDrive - University of Cambridge//MenuTracker//MenuTracker//September_collection_2022' # fill in your working dictionary
+wd = 'your working path' # fill in your working dictionary
 
 setwd(wd)
 
@@ -1076,8 +1076,8 @@ data_all = bind_rows(data_all,amt)
 # data_all = bind_rows(data_all, rouge)
 
 
-data_all = fread('MenuTracker_Sep2022_050922.csv')
-fwrite(data_all,'MenuTracker_Sep2022_050922.csv')
+# data_all = fread('MenuTracker_Sep2022_050922.csv')
+fwrite(data_all,'filename.csv')
 
 
 
