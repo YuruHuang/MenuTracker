@@ -973,16 +973,20 @@ data_all = bind_rows(data_all, birds)
 
 
 # 79. tortilla
-tortilla = read_data('Tortilla')
-colnames(tortilla) = c('delete','component_name','kcal','kj','fat','satfat','carb',
-                       'sugar','fibre','protein','salt','allergens','may contain','collection_date',
-                       'rest_name','menu_id','step','item_name')
-tortilla$delete=NULL
-tortilla$component = 'Yes'
-check_bb(tortilla)
-tortilla = clean_columns(tortilla)
-tortilla$menu_id = as.character(tortilla$menu_id)
-data_all = bind_rows(data_all, tortilla)
+tortilla = pdf_convert('Tortilla','Tortilla')
+tortilla_select = tortilla %>% select('rest_name', 'collection_date', 'item_name', 'size', 'subitem_name','menu_id',  'weight', 'ingredient_category', 
+                                       'kcal','fat', 'saturated_fat', 'carbs','sugars','protein','fibre','salt','allergens')
+colnames(tortilla_select) = c('rest_name', 'collection_date', 'item_name', 'size', 'subitem_name','menu_id',  'servingsize', 'ingredient_category', 
+                              'kcal_100','fat_100', 'satfat_100', 'carb_100','sugar_100','protein_100','fibre_100','salt_100','allergens')
+tortilla_select$item_name = paste(tortilla_select$item_name, tortilla_select$size, sep=', ')
+for (var in c('kcal_100','fat_100', 'satfat_100', 'carb_100','sugar_100','protein_100','fibre_100','salt_100')){
+  var_name = gsub(x=var,pattern= '_100', replacement = '')
+  tortilla_select[[var_name]] = tortilla_select$servingsize/100*tortilla_select[[var]]
+}
+check_bb(tortilla_select)
+tortilla_select$servingsize = as.character(tortilla_select$servingsize)
+# tortilla = clean_columns(tortilla)
+data_all = bind_rows(data_all, tortilla_select)
 
 
 # 80. Tosssed
@@ -1072,8 +1076,8 @@ data_all = bind_rows(data_all,amt)
 # data_all = bind_rows(data_all, rouge)
 
 
-data_all = fread('MenuTracker_Sep2022_020922.csv')
-fwrite(data_all,'MenuTracker_Sep2022_020922.csv')
+data_all = fread('MenuTracker_Sep2022_050922.csv')
+fwrite(data_all,'MenuTracker_Sep2022_050922.csv')
 
 
 

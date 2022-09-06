@@ -1,7 +1,7 @@
 # import re
 from datetime import date
-
 import scrapy
+import urllib.parse
 
 
 class A70CornishSpider(scrapy.Spider):
@@ -14,6 +14,7 @@ class A70CornishSpider(scrapy.Spider):
         for item in items:
             item_url = 'https://thecornishbakery.com' + item
             yield scrapy.Request(url=item_url, callback=self.parse_item)
+
 
     def parse_item(self, response):
         # nutrition = response.xpath('//table/tbody/tr')
@@ -39,3 +40,15 @@ class A70CornishSpider(scrapy.Spider):
         }
         # item_dict.update(nutrition_dict)
         yield item_dict
+
+
+
+# for the ones with the custom builder -> small batch of code to download the data for individual pastries 
+
+# builder_url = 'https://thecornishbakery.com/apps/builder?b=nhNf7NXilUGOQUGzaCeS7tL1'
+# urls = response.xpath('//div[@class="bxp-owl-item"]//a/@title-strip').getall()
+# urls = list(set(urls))
+# for url in urls: 
+#     content = urllib.parse.unquote(url)
+#     content_page = scrapy.Selector(text = content)
+

@@ -18,7 +18,7 @@ from define_collection_wave import folder
 import platform
 
 # Define paths 
-root_path = 'C:\\Users\\yh459\\OneDrive - University of Cambridge\\MenuTracker\\MenuTracker'
+root_path = 'your root path'
 web_browser_path = os.path.join(root_path, 'chromedriver.exe')
 
 

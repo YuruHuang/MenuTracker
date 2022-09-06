@@ -12,7 +12,7 @@ source('..//DataMerge/Helpers.R')
 
 rm(list = ls())
 
-wd = 'C://Users//yh459//OneDrive - University of Cambridge//MenuTracker//MenuTracker//September_collection_2022' # fill in your working dictionary
+wd = 'your working dictionary' # fill in your working dictionary
 
 setwd(wd)
 
