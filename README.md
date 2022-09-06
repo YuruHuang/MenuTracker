@@ -74,7 +74,7 @@ There are two steps for obtaining MenuTracker data. First, we use Python scripts
 ### Step 5: Extract data from PDF
 - If the chain you are interested in only provides nutritional information in PDF format, use Tabula or Camelot (linked above) to extract their data tables and save the csv in the corresponding folder.
 ### Step 6: Compile and standardise the data 
-- Run `DataMerge_MenuTracker.R` file to merge the data if you need! 
+- Run `DatasetMerge_MenuTracker.R` file to merge the data if you need! 
 
 Voila! Here you have the master file for one wave of MenuTracker data. 
 
