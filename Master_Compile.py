@@ -170,7 +170,7 @@ combo_PDFDownload('47_Coffee1', 'https://www.coffee1.co.uk/food-nutritional-info
 RunSpider('48_CommonRooms', folder)
 
 # 49. Cookhouse & Pub
-combo_PDFDownload('49_CookhousePub', url='https://www.cookhouseandpub.co.uk/en-gb/
+combo_PDFDownload('49_CookhousePub', url='https://www.cookhouseandpub.co.uk/en-gb/', 
                   prex='https://www.cookhouseandpub.co.uk', verify=False)
 
 # 50.Crussh -> terrible website!
