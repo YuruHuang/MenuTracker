@@ -1076,8 +1076,8 @@ data_all = bind_rows(data_all,amt)
 # data_all = bind_rows(data_all, rouge)
 
 
-data_all = fread('MenuTracker_Sep2022_050922.csv')
-fwrite(data_all,'MenuTracker_Sep2022_050922.csv')
+# data_all = fread('MenuTracker_Sep2022_050922.csv')
+fwrite(data_all,'filename.csv')
 
 
 
