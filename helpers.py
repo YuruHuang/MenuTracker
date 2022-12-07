@@ -14,11 +14,12 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 
+
 from define_collection_wave import folder
 import platform
 
 # Define paths 
-root_path = 'your root path'
+root_path = 'C://Users//yh459//OneDrive - University of Cambridge//MenuTracker//MenuTracker'
 web_browser_path = os.path.join(root_path, 'chromedriver.exe')
 
 
@@ -146,19 +147,22 @@ def java_PDF(rest_name, url, prex=None, link_=True, xpath_=None):
     browser.quit()
 
 def IMGDownloader(url, filePath):
-    img_data = requests.get(url).content
-    with open(filePath, 'wb') as handler:
-        handler.write(img_data)
+    opener = urllib.request.build_opener()
+    opener.addheaders = [('User-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36')]
+    urllib.request.install_opener(opener)
+    urllib.request.urlretrieve(url, filePath)
+
 
 def combo_imgDownload(rest_name,url,folder):
     path = create_folder(rest_name, folder)
     s = Service(web_browser_path)
     browser = webdriver.Chrome(service=s)
     browser.get(url)
-    sleep(3)
-    images = browser.find_elements(by=By.XPATH, value='//img[contains(@src, "jpeg")]')
+    sleep(10)
+    images = browser.find_elements(by=By.XPATH, value='//img[contains(@src, "png")]')
     for image in images:
         image_link = image.get_attribute("src")
+        print(image_link)
         image_name = image_link.split('/')[-1]
         image_path = os.path.join(path, image_name)
         IMGDownloader(image_link,image_path)

@@ -12,6 +12,7 @@ class A23RevolutionSpider(scrapy.Spider):
     allowed_domains = ['www.revolution-bars.co.uk']
     # start_urls = ['https://www.revolution-bars.co.uk/bar/london-america-square/menus/food-menu/']
     start_urls = ['https://www.revolution-bars.co.uk/bar/london-clapham-high-street/menus/food-menu/']
+    # 'https://www.revolution-bars.co.uk/bar/london-clapham-high-street/menus/brunch-menu/']
 
     def __init__(self):
         self.driver = webdriver.Chrome(web_browser_path)
@@ -23,7 +24,7 @@ class A23RevolutionSpider(scrapy.Spider):
         resp_new = Selector(text=self.driver.page_source)
         itemnames = resp_new.xpath(f'//div[@class="menusitem"]//p/strong/text()').getall()
         for i in range(len(items)):
-            item = self.driver.find_elements_by_xpath('//li[@id="nutritional-info"]')[i]
+            item = self.driver.find_elements_by_xpath('//li[@class="menusitem__title__icon menusitem__title__icon--nutrition"]')[i]
             self.driver.execute_script("arguments[0].scrollIntoView();", item)
             self.driver.execute_script("arguments[0].click();", item)
             sleep(1)
@@ -35,7 +36,7 @@ class A23RevolutionSpider(scrapy.Spider):
             item_desc = resp.xpath(f'(//div[@class="menusitem"])[{i + 1}]//div[@class="desc"]/text()').get()
             price = resp.xpath(f'(//div[@class="menusitem"])[{i + 1}]//p[@class="price"]/text()').get()
             allergens = resp.xpath(
-                f'string((//div[@class="menusitem"])[{i + 1}]//div[@class="font--mediumgrey font--small font--italic pt-1"])').get()
+                f'string((//div[@class="menusitem"])[{i + 1}]//div[@class="font--mediumgrey font--small font--italic pt-1"])').get().strip()
             item_dict = {
                 'collection_date': date.today().strftime("%b-%d-%Y"),
                 'rest_name': 'Revolution Vodka Bars',

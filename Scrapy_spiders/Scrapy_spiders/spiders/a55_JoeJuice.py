@@ -5,6 +5,8 @@ import scrapy
 from browserPath import web_browser_path
 from scrapy import Selector
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+
 
 
 class A55JoejuiceSpider(scrapy.Spider):
@@ -25,26 +27,21 @@ class A55JoejuiceSpider(scrapy.Spider):
         sleep(10)
         self.driver.find_element_by_id('declineButton').click()
         sleep(1)
-        categories = self.driver.find_elements_by_xpath('//div[@data-cy="product-subheader"]')
+        categories = self.driver.find_elements(by = By.XPATH, value = '//div[@data-cy="product-subheader"]')
         for i in range(len(categories)):
             cat_name = categories[i].text
-            items = categories[i].find_elements_by_xpath('./following-sibling::div/div[contains(@class,"item")]')
+            items = categories[i].find_elements(by = By.XPATH, value='./following-sibling::div/div[contains(@class,"item")]')
             for j in range(len(items)):
-                item = self.driver.find_element_by_xpath(
-                    f'((//div[@data-cy="product-subheader"])[{i + 1}]/following-sibling::div/div[contains(@class,"item")])[{j + 1}]')
-                item_description = item.find_element_by_xpath(
-                    './/p[@class="MuiTypography-root jss99 MuiTypography-caption MuiTypography-colorTextPrimary"]').text
-                item_price = item.find_element_by_xpath(
-                    './/p[@class="MuiTypography-root MuiTypography-caption MuiTypography-colorTextPrimary MuiTypography-alignLeft"]').text
-                item_button = self.driver.find_element_by_xpath(
-                    f'((//div[@data-cy="product-subheader"])[{i + 1}]/following-sibling::div/div[contains(@class,"item")])[{j + 1}]//button')
+                item = self.driver.find_element(by=By.XPATH, value=f'((//div[@data-cy="product-subheader"])[{i + 1}]/following-sibling::div/div[contains(@class,"item")])[{j + 1}]')
+                item_description = item.find_element_by_xpath('.//p[@class="MuiTypography-root jss98 MuiTypography-caption MuiTypography-colorTextPrimary"]').text
+                item_price = item.find_element_by_xpath('.//p[@class="MuiTypography-root MuiTypography-caption MuiTypography-colorTextPrimary MuiTypography-alignLeft"]').text
+                item_button = self.driver.find_element_by_xpath(f'((//div[@data-cy="product-subheader"])[{i + 1}]/following-sibling::div/div[contains(@class,"item")])[{j + 1}]//button')
                 self.driver.execute_script("arguments[0].click();", item_button)
                 sleep(3)
                 try:
-                    button = self.driver.find_element_by_xpath(
-                        '//button[@class="MuiButtonBase-root MuiButton-root MuiButton-text jss14 MuiButton-textPrimary"]')
+                    button = self.driver.find_element_by_xpath('//button[@class="MuiButtonBase-root MuiButton-root MuiButton-text jss14 MuiButton-textPrimary"]')
                     self.driver.execute_script("arguments[0].click();", button)
-                    sleep(3)
+                    sleep(5)
                     item_page = Selector(text=self.driver.page_source)
                     sleep(5)
                     back_button = self.driver.find_element_by_xpath('//button[@data-cy="modal-sticky-header-button"]')

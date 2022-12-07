@@ -31,9 +31,9 @@ class A80TossedSpider(scrapy.Spider):
             self.driver.get(category_urls[i])
             cat_name = category_names[i]
             sleep(3)
-            items = self.driver.find_elements(by=By.XPATH, value='//div[@class="css-l3v0e0 e1olru1g11"]')
+            items = self.driver.find_elements(by=By.XPATH, value='//div[@class="css-12knhsc e1olru1g11"]')
             for i in range(len(items)):
-                item = self.driver.find_elements(by=By.XPATH, value='//div[@class="css-l3v0e0 e1olru1g11"]')[i]
+                item = self.driver.find_elements(by=By.XPATH, value='//div[@class="css-12knhsc e1olru1g11"]')[i]
                 item_type = item.get_attribute('data-test-type')
                 self.driver.execute_script("arguments[0].click();", item)
                 try:
@@ -43,7 +43,7 @@ class A80TossedSpider(scrapy.Spider):
                     pass
                 sleep(2)
                 if item_type == 'upsell-to-meal-deal':
-                    self.driver.execute_script("arguments[0].click();", self.driver.find_element(by = By.XPATH, value='//button[@class="e1msu4pj7 css-1wjv3ev e2l7ybf9"]'))
+                    self.driver.execute_script("arguments[0].click();", self.driver.find_element(by = By.XPATH, value='//button[@class="e1msu4pj7 css-gl0ute e2l7ybf10"]'))
                     sleep(2)
                 try:
                     self.driver.find_element(by=By.XPATH, value='//li[@data-test="tab-Nutrition"]').click()

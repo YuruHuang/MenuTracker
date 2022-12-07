@@ -170,7 +170,7 @@ combo_PDFDownload('47_Coffee1', 'https://www.coffee1.co.uk/food-nutritional-info
 RunSpider('48_CommonRooms', folder)
 
 # 49. Cookhouse & Pub
-combo_PDFDownload('49_CookhousePub', url='https://www.cookhouseandpub.co.uk/en-gb/
+combo_PDFDownload('49_CookhousePub', url='https://www.cookhouseandpub.co.uk/en-gb/', 
                   prex='https://www.cookhouseandpub.co.uk', verify=False)
 
 # 50.Crussh -> terrible website!
@@ -301,3 +301,11 @@ combo_PDFDownload('87_AMT', url='http://amtcoffee.co.uk/types/drinks/')
 # 88. Chicken Cottage
 combo_imgDownload('88_ChickenCottage','https://chickencottage.com/our-food/',folder)
 
+# 89. Browns
+RunSpider('89_Browns', folder)
+
+# 90. ONeills
+RunSpider('90_ONeills', folder)
+
+# 91. Nicholson's
+RunSpider('91_Nicholsons', folder)

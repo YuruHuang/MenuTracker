@@ -9,33 +9,24 @@ class A38ItsuSpider(scrapy.Spider):
     start_urls = ['https://www.itsu.com/menu']
 
     def parse(self, response):
-        items = response.xpath('//div[@class="m__menu-item-wrapper"]/a/@href').getall()
-        menu_section = response.request.url.split('/')[-2]
+        items = response.xpath('//div[@class="item col-md-4 col-6"]/a/@href').getall()
+        # menu_section = response.request.url.split('/')[-2]
         for item in items:
-            yield scrapy.Request(url=item, callback=self.parse_item, meta={'menu_section': menu_section})
+            yield scrapy.Request(url= 'https://www.itsu.com' + item, callback=self.parse_item)
 
     def parse_item(self, response):
-        yield {
-            'item_name': response.xpath('//h1[@class="header-title"]/text()').get(),
-            'item_description': response.xpath('//div[@class="m__item-description"]//p/text()').get(),
+        nutrients = response.xpath('//dl[@class="nutrition-facts grid-4"]/div')
+        nutrient_dict = {}
+        for nutrient in nutrients:
+            nutrient_dict.update({
+                nutrient.xpath('normalize-space(.//dt[@class="fact-title"]/text())').get():
+                nutrient.xpath('normalize-space(.//dd[@class="fact-description"]/text())').get()})
+        item_dict =  {
+            'item_name': response.xpath('normalize-space(//h1[@class="h2 secondary-name"]/text())').get(),
+            'item_description': response.xpath('normalize-space(//p[@class="description"]/text())').get(),
             'rest_name': 'Itsu',
             'collection_date': date.today().strftime("%b-%d-%Y"),
-            'menu_section': response.request.meta['menu_section'],
-            'kcal': response.xpath(
-                '//div[@class="m__item-nutrition"]//p[contains(text(),"calories")]/following-sibling::h5/text()').get(),
-            'fat': response.xpath(
-                '//div[@class="m__item-nutrition"]//p[contains(text(),"fat total")]/following-sibling::h5/text()').get(),
-            'satfat': response.xpath(
-                '//div[@class="m__item-nutrition"]//p[contains(text(),"fat saturated")]/following-sibling::h5/text()').get(),
-            'protein': response.xpath(
-                '//div[@class="m__item-nutrition"]//p[contains(text(),"protein")]/following-sibling::h5/text()').get(),
-            'carb': response.xpath(
-                '//div[@class="m__item-nutrition"]//p[contains(text(),"carbs")]/following-sibling::h5/text()').get(),
-            'sugar': response.xpath(
-                '//div[@class="m__item-nutrition"]//p[contains(text(),"sugars")]/following-sibling::h5/text()').get(),
-            'fibre': response.xpath(
-                '//div[@class="m__item-nutrition"]//p[contains(text(),"fibre")]/following-sibling::h5/text()').get(),
-            'salt': response.xpath(
-                '//div[@class="m__item-nutrition"]//p[contains(text(),"salt")]/following-sibling::h5/text()').get(),
-            'allergen': response.xpath('//div[@class="allergen-table"]/span/text()').getall()
+            # 'menu_section': response.request.meta['menu_section'],
         }
+        item_dict.update(nutrient_dict)
+        yield item_dict

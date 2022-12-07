@@ -28,18 +28,36 @@ class A24ZizziSpider(scrapy.Spider):
         menu_sections = response.json().get('data').get('menu_sections')
         for menu_section in menu_sections:
             menu_section_name = menu_section.get('section_title')
-            print(menu_section_name)
-            items = menu_section.get('items')
-            for item in items:
-                yield {
-                    'collection_date': date.today().strftime("%b-%d-%Y"),
-                    'rest_name': "Zizzi",
-                    'menu_name': response.request.meta['menuName'],
-                    'menu_section': menu_section_name,
-                    'item_name': item.get('name'),
-                    'item_id': item.get('id'),
-                    'kcal': item.get('calorie_information'),
-                    'item_description': item.get('description'),
-                    'price': item.get('prices').get('core_price_point'),
-                    'dietary': item.get('dietary')
-                }
+            if menu_section.get('type') == 'section':
+                print(menu_section_name)
+                items = menu_section.get('items')
+                for item in items:
+                    yield {
+                        'collection_date': date.today().strftime("%b-%d-%Y"),
+                        'rest_name': "Zizzi",
+                        'menu_name': response.request.meta['menuName'],
+                        'menu_section': menu_section_name,
+                        'item_name': item.get('name'),
+                        'item_id': item.get('id'),
+                        'kcal': item.get('calorie_information'),
+                        'item_description': item.get('description'),
+                        'price': item.get('prices').get('core_price_point'),
+                        'dietary': item.get('dietary')
+                    }
+            elif menu_section.get('type') =='subsections':
+                for sub_section in menu_section.get('subsections'):
+                    items = sub_section.get('items')
+                    for item in items:
+                        yield {
+                            'collection_date': date.today().strftime("%b-%d-%Y"),
+                            'rest_name': "Zizzi",
+                            'menu_name': response.request.meta['menuName'],
+                            'menu_section': menu_section_name,
+                            'item_name': item.get('name'),
+                            'item_id': item.get('id'),
+                            'kcal': item.get('calorie_information'),
+                            'item_description': item.get('description'),
+                            'price': item.get('prices').get('core_price_point'),
+                            'dietary': item.get('dietary')
+                        }
+

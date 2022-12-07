@@ -17,7 +17,7 @@ class A69TescocafeSpider(scrapy.Spider):
 
     def parse_item(self, response):
         category = response.request.meta['category']
-        items = response.xpath('//div[@class="styled-tbp4qh-0 inHnsm"]/section')
+        items = response.xpath('//div[@class="base-components__RootElement-sc-1mosoyj-1 styled-erqp9a-0 gwIwEm egixNm shared__Row-xzat31-0 dJbDMN beans-grid__row"]//section')
         for item in items:
             item_all = item.xpath('./@aria-label').get()
             calories = item_all.split(',')[-1].strip()
