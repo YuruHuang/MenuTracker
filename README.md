@@ -68,7 +68,7 @@ There are two steps for obtaining MenuTracker data. First, we use Python scripts
 - Download the compatible <a href="https://sites.google.com/chromium.org/driver/">Chrome Driver</a> and update the driver path where appropriate.
 ### Step 3: Make changes where necessary
 - Define your data collection wave in `define_collection_wave.py`
-- Update relative/absolute paths where necessary. 
+- Update the driver path in browserPath.py
 ### Step 4: Run the code for data collection!
 - Run `Master_Compile.py` for a full download, or run parts of it to download nutritional information for a specific chain.
 ### Step 5: Extract data from PDF
